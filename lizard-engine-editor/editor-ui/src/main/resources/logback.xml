@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+    <property resource="${logbackPropertyFileName:-logback.properties}"/>
+
+    <variable name="trueArchiving" value="log.zip"/>
+    <variable name="falseArchiving" value="log"/>
+    <variable name="defaultArchiving" value="true"/>
+    <variable name="appenderNameDefault" value="FILE"/>
+
+    <variable name="maxFileSizeDefault" value="100"/>
+
+    <variable name="logPathDefault" value="logs"/>
+    <variable name="logArchivePathDefault" value="logs_zip"/>
+    <variable name="splitFormatDefault" value="yyyy-MM-dd_HH"/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>
+            ${logPath:-${logPathDefault}}/lizard.log
+        </file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${logArchivePath:-${logArchivePathDefault}}/lizard_%d{${splitFormat:-${splitFormatDefault}}}.%i.${${archiving:-${defaultArchiving}}Archiving}
+            </fileNamePattern>
+            <maxFileSize>${maxFileSize:-${maxFileSizeDefault}}MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="${appenderName:-${appenderNameDefault}}"/>
+    </root>
+
+    <logger name="com.github.burningrain.lizard" level="info"/>
+
+</configuration>

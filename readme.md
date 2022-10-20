@@ -1,13 +1,33 @@
 # Lizard-Engine
 
-![lizard-editor with plugin](https://github.com/burningrain/lizard-engine/pics/editor_1.png?raw=true)
+This project consists of:
+```
+|__ lizard-engine-api     the api between the core and the editor 
+|__ lizard-engine-core    the simple finite state machine (today)
+|__ lizard-engine-editor  the editor for a description of a process
+   \__ editor-api         the api for foreign plugins is based on pf4j 
+   |__ editor-ui          the user interface based on javafx
+   |__ gviz-fx            the javafx-based library for displaying graphs
+   |
+   |__ planetbot-lizard-editor-plugin  the example of a plugin for the lizard-engine-editor   
+```
 
+Lizard Editor is the graph editor that is based on a plugin architecture. This project uses [pf4j](https://pi4j.com/) as a plugin system.
 
-### Запуск из-под IDE
-* добавить в VM Options следующие строки:
+![lizard-editor with plugin](https://github.com/burningrain/lizard-engine/blob/main/pics/editor_1.png?raw=true)
+*the lizard editor with the plugin for a game 'planet bot'*
+
+### Starting from IDE
+
+* compile the project by using the next command:
+```mvn clean package```
+
+* Choose the class ```com.github.burningrain.lizard.editor.ui.LizardEditorApplication.java```
+
+* Add to VM Options next:
 ```shell
 --module-path
-"C:\javafx-sdk-18.0.2\lib"
+"PATH_TO_JDK/lib"
 --add-modules
 javafx.controls,javafx.fxml,javafx.base,javafx.web
 --add-exports
@@ -65,3 +85,5 @@ javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
 --add-exports
 javafx.controls/javafx.scene.chart=ALL-UNNAMED
 ```
+
+* If you want to use a plugin you should put it in the folder ```plugins``` and restart the application.
