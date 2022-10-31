@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -10,35 +11,35 @@ import java.io.Serializable;
 public class VertexViewModel<D extends Serializable> extends GraphElementViewModel<D> {
 
     // графовые свойства
-    private final SimpleIntegerProperty x = new SimpleIntegerProperty();
-    private final SimpleIntegerProperty y = new SimpleIntegerProperty();
+    private final SimpleFloatProperty x = new SimpleFloatProperty();
+    private final SimpleFloatProperty y = new SimpleFloatProperty();
     private ObservableList<EdgeViewModel> edges = FXCollections.observableArrayList();
 
     // бизнес свойства. Плохо, что смешано...
     private final SimpleStringProperty className = new SimpleStringProperty();
 
 
-    public int getX() {
+    public float getX() {
         return x.get();
     }
 
-    public SimpleIntegerProperty xProperty() {
+    public SimpleFloatProperty xProperty() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x.set(x);
     }
 
-    public int getY() {
+    public float getY() {
         return y.get();
     }
 
-    public SimpleIntegerProperty yProperty() {
+    public SimpleFloatProperty yProperty() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y.set(y);
     }
 

@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.engine.api.data;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProcessData extends LizardData {
 
@@ -12,11 +13,12 @@ public class ProcessData extends LizardData {
 
     public ProcessData(String title,
                        String description,
+                       Map<String, String> attributes,
                        List<NodeData> elements,
                        List<TransitionData> transitions,
                        int startElementId
     ) {
-        super(title, description);
+        super(title, description, attributes);
         this.elements = elements;
         this.transitions = transitions;
         this.startElementId = startElementId;

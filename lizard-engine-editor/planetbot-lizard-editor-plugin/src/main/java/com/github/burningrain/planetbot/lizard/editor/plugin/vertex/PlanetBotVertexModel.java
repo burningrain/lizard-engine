@@ -1,6 +1,8 @@
 package com.github.burningrain.planetbot.lizard.editor.plugin.vertex;
 
+import com.github.br.starmarines.game.api.galaxy.Planet;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.CheckBox;
@@ -17,6 +19,8 @@ public class PlanetBotVertexModel implements Serializable {
 
     private final SimpleObjectProperty<PlanetType> planetType = new SimpleObjectProperty<>(PlanetType.TYPE_A);
     private final SimpleBooleanProperty isBase = new SimpleBooleanProperty(false);
+    private final SimpleIntegerProperty ownerId = new SimpleIntegerProperty(Planet.EMPTY_OWNER);
+    private final SimpleIntegerProperty units = new SimpleIntegerProperty(0);
 
     private ChangeListener<PlanetType> planetTypeListener;
     private ChangeListener<Boolean> isBaseListener;
@@ -91,6 +95,30 @@ public class PlanetBotVertexModel implements Serializable {
 
     public void setIsBase(boolean isBase) {
         this.isBase.set(isBase);
+    }
+
+    public int getOwnerId() {
+        return ownerId.get();
+    }
+
+    public SimpleIntegerProperty ownerIdProperty() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId.set(ownerId);
+    }
+
+    public int getUnits() {
+        return units.get();
+    }
+
+    public SimpleIntegerProperty unitsProperty() {
+        return units;
+    }
+
+    public void setUnits(int units) {
+        this.units.set(units);
     }
 
 }

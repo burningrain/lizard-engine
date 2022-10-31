@@ -5,7 +5,7 @@ import com.github.burningrain.lizard.engine.api.data.ProcessData;
 
 public interface ImportExportExtPoint extends ExtensionPoint {
 
-    ProcessData read(byte[] bytes);
+    ProcessData read(String name, byte[] bytes);
 
     byte[] write(ProcessData processData);
 

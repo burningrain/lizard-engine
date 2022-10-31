@@ -1,7 +1,6 @@
 package com.github.burningrain.lizard.editor.ui;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
-import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class PlanetBotEdgeModel implements Serializable {
 
-    private SimpleStringProperty scenarioType = new SimpleStringProperty();
+    private final SimpleStringProperty scenarioType = new SimpleStringProperty();
 
     public String getScenarioType() {
         return scenarioType.get();

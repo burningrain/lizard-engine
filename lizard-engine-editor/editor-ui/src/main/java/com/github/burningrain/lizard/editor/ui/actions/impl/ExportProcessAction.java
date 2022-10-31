@@ -1,7 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
-import com.github.burningrain.lizard.editor.ui.core.StageManager;
 import com.github.burningrain.lizard.editor.ui.io.ExportImportInnerConverter;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.utils.FileUtils;
@@ -46,13 +45,14 @@ public class ExportProcessAction implements NotRevertAction {
         if(extensionsTitles.isEmpty()) {
             uiUtils.createStageChild(stage -> {
                 Alert alertDialog = new Alert(Alert.AlertType.INFORMATION);
-                alertDialog.setHeaderText("Плагинов для экспорта не обнаружено!");
+                alertDialog.setHeaderText("The plugins for export have not been found!");
                 Platform.runLater(alertDialog::showAndWait);
             });
             return;
         }
 
-        uiUtils.showSaveDialogChooserFile("Экспорт процесса", "файл процесса", extensionsTitles, this::handle);
+        List<String> exts = extensionsTitles.stream().map(s -> "*." + s).collect(Collectors.toList());
+        uiUtils.showSaveDialogChooserFile("Export", exts.toString(), exts, this::handle);
     }
 
     private void handle(File file) {
@@ -62,7 +62,7 @@ public class ExportProcessAction implements NotRevertAction {
         try {
             Files.write(file.toPath(), importExportPoint.write(processData));
         } catch (IOException e) {
-            e.printStackTrace(); //todo
+            throw new RuntimeException(e);
         }
     }
 

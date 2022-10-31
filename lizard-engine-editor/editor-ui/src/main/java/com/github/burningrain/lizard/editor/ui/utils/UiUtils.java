@@ -60,7 +60,7 @@ public class UiUtils {
 
     public ImportExportExtPoint chooseImportExportExtPoint(String extension) {
         IOWrapper ioWrapper = store.getIoPoints().get(extension);
-        AtomicReference<ImportExportExtPoint> importExportExtPoint = null;
+        AtomicReference<ImportExportExtPoint> importExportExtPoint = new AtomicReference<>();
         if (ioWrapper.getSize() == 1) {
             importExportExtPoint.set(ioWrapper.getFirst());
         } else if (ioWrapper.getSize() != 0) {

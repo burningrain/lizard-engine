@@ -1,19 +1,19 @@
 package com.github.burningrain.planetbot.lizard.editor.plugin.vertex;
 
 import com.github.burningrain.lizard.editor.api.*;
+import com.github.burningrain.planetbot.lizard.editor.plugin.io.Constants;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.github.burningrain.planetbot.lizard.editor.plugin.io.Constants.*;
 
 public class PlanetBotVertexFactory implements VertexFactory<PlanetBotVertexModel, Circle, PlanetBotVertexFactory.PlanetBotVertexInspector> {
 
@@ -38,7 +38,7 @@ public class PlanetBotVertexFactory implements VertexFactory<PlanetBotVertexMode
                     planetTypeComboBox.setId("planetTypeComboBox");
                     inspector.getChildren().add(planetTypeComboBox);
 
-                    CheckBox isMainCheckBox = new CheckBox("base");
+                    CheckBox isMainCheckBox = new CheckBox("is a base");
                     isMainCheckBox.setId("isMainCheckBox");
                     inspector.getChildren().add(isMainCheckBox);
 
@@ -91,16 +91,23 @@ public class PlanetBotVertexFactory implements VertexFactory<PlanetBotVertexMode
         @Override
         public Map<String, String> exportNodeData(PlanetBotVertexModel model) {
             HashMap<String, String> map = new HashMap<>();
-            map.put("planetType", String.valueOf(model.getPlanetType().getCode()));
-            map.put("isBase", String.valueOf(model.isBaseProperty().get()));
+
+            map.put(PLANET_TYPE, String.valueOf(model.getPlanetType().getCode()));
+            map.put(IS_START_POINT, String.valueOf(model.isBaseProperty().get()));
+            map.put(OWNER_ID, String.valueOf(model.getOwnerId()));
+            map.put(UNITS, String.valueOf(model.getUnits()));
+
             return map;
         }
 
         @Override
         public PlanetBotVertexModel importNodeData(Map<String, String> data) {
             PlanetBotVertexModel planetBotVertexModel = new PlanetBotVertexModel();
-            planetBotVertexModel.setPlanetType(PlanetType.getByCode(Byte.parseByte(data.get("planetType"))));
-            planetBotVertexModel.setIsBase(Boolean.parseBoolean(data.get("isBase")));
+
+            planetBotVertexModel.setPlanetType(PlanetType.getByCode(Byte.parseByte(data.get(PLANET_TYPE))));
+            planetBotVertexModel.setIsBase(Boolean.parseBoolean(data.get(IS_START_POINT)));
+            planetBotVertexModel.setOwnerId(Integer.parseInt(data.get(OWNER_ID)));
+            planetBotVertexModel.setUnits(Integer.parseInt(data.get(UNITS)));
 
             return planetBotVertexModel;
         }
@@ -108,7 +115,7 @@ public class PlanetBotVertexFactory implements VertexFactory<PlanetBotVertexMode
 
     @Override
     public String getTitle() {
-        return "planet";
+        return Constants.VERTEX_TITLE;
     }
 
     @Override

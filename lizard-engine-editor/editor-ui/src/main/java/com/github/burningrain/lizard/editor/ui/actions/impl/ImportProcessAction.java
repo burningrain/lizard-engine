@@ -1,6 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
-import com.github.burningrain.lizard.editor.ui.core.StageManager;
+import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.editor.ui.io.ExportImportInnerConverter;
 import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
@@ -12,7 +12,6 @@ import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,13 +45,14 @@ public class ImportProcessAction implements NotRevertAction {
         if (extensionsTitles.isEmpty()) {
             uiUtils.createStageChild(stage -> {
                 Alert alertDialog = new Alert(Alert.AlertType.INFORMATION);
-                alertDialog.setHeaderText("Плагинов для импорта не обнаружено!");
+                alertDialog.setHeaderText("The plugins for import have not been found!");
                 Platform.runLater(alertDialog::showAndWait);
             });
             return;
         }
 
-        uiUtils.showOpenDialogChooserFile("Импорт процесса", "файл процесса", extensionsTitles, this::handle);
+        List<String> exts = extensionsTitles.stream().map(s -> "*." + s).collect(Collectors.toList());
+        uiUtils.showOpenDialogChooserFile("Import", exts.toString(), exts, this::handle);
     }
 
     private void handle(File file) {
@@ -63,9 +63,9 @@ public class ImportProcessAction implements NotRevertAction {
         try {
             bytes = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
-            e.printStackTrace(); //todo
+            throw new RuntimeException(e);
         }
-        ProcessViewModel processViewModel = exportImportConverter.from(importExportExtPoint.read(bytes));
+        ProcessViewModel processViewModel = exportImportConverter.from(importExportExtPoint.read(file.getName(), bytes));
 
         ProjectModel projectModel = new ProjectModel();
         //projectModel.setDescriptor(); todo
