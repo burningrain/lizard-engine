@@ -3,6 +3,7 @@ package com.github.burningrain.planetbot.lizard.editor.plugin;
 import com.github.br.starmarines.game.api.galaxy.Planet;
 import com.github.br.starmarines.game.api.galaxy.PlanetType;
 import com.github.br.starmarines.gamecore.api.Galaxy;
+import com.github.br.starmarines.map.ZipMapConverter;
 import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.engine.api.data.NodeData;
@@ -10,18 +11,12 @@ import com.github.burningrain.lizard.engine.api.data.ProcessData;
 import com.github.burningrain.lizard.engine.api.data.TransitionData;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritablePixelFormat;
 import org.pf4j.Extension;
-
-import com.github.br.starmarines.map.ZipMapConverter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import static com.github.burningrain.planetbot.lizard.editor.plugin.io.Constants.*;
@@ -40,6 +35,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
     @Override
     public byte[] write(LizardPluginApi pluginApi, ProcessData processData) {
         Galaxy.Builder builder = new Galaxy.Builder(processData.getTitle(), convertImageToBytes(pluginApi.takeMinimapSnapshot()));
+        builder.setDescription(processData.getDescription());
         for (NodeData element : processData.getElements()) {
             builder.addPlanet(createPlanet(element), Boolean.parseBoolean(element.getAttributes().get(IS_START_POINT)));
         }
@@ -54,7 +50,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
 
     @Override
     public ProcessData read(LizardPluginApi pluginApi, String name, byte[] bytes) {
-        Galaxy galaxy = mapConverter.toGalaxy(name, bytes);
+        Galaxy galaxy = mapConverter.toGalaxy(bytes);
 
         ArrayList<NodeData> elements = new ArrayList<>();
         Collection<Planet> startPoints = galaxy.getStartPoints();
@@ -74,7 +70,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
 
         return new ProcessData(
                 galaxy.getTitle(),
-                "",
+                galaxy.getDescription(),
                 attributes,
                 elements,
                 transitions,
