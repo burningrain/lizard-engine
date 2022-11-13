@@ -3,14 +3,25 @@ package com.github.burningrain.planetbot.lizard.editor.plugin;
 import com.github.br.starmarines.game.api.galaxy.Planet;
 import com.github.br.starmarines.game.api.galaxy.PlanetType;
 import com.github.br.starmarines.gamecore.api.Galaxy;
+import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.engine.api.data.NodeData;
 import com.github.burningrain.lizard.engine.api.data.ProcessData;
 import com.github.burningrain.lizard.engine.api.data.TransitionData;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritablePixelFormat;
 import org.pf4j.Extension;
 
 import com.github.br.starmarines.map.ZipMapConverter;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import static com.github.burningrain.planetbot.lizard.editor.plugin.io.Constants.*;
@@ -27,14 +38,14 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
     }
 
     @Override
-    public byte[] write(ProcessData processData) {
-        Galaxy.Builder builder = new Galaxy.Builder(processData.getTitle(), new byte[0]); //fixme добавить миникарту
+    public byte[] write(LizardPluginApi pluginApi, ProcessData processData) {
+        Galaxy.Builder builder = new Galaxy.Builder(processData.getTitle(), convertImageToBytes(pluginApi.takeMinimapSnapshot()));
         for (NodeData element : processData.getElements()) {
             builder.addPlanet(createPlanet(element), Boolean.parseBoolean(element.getAttributes().get(IS_START_POINT)));
         }
 
         for (TransitionData transition : processData.getTransitions()) {
-            builder.addEdge((short)transition.getSourceId(), (short)transition.getTargetId());
+            builder.addEdge((short) transition.getSourceId(), (short) transition.getTargetId());
         }
         builder.maxStepsCount(Integer.parseInt(processData.getAttributes().get(MAX_STEPS_COUNT)));
 
@@ -42,7 +53,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
     }
 
     @Override
-    public ProcessData read(String name, byte[] bytes) {
+    public ProcessData read(LizardPluginApi pluginApi, String name, byte[] bytes) {
         Galaxy galaxy = mapConverter.toGalaxy(name, bytes);
 
         ArrayList<NodeData> elements = new ArrayList<>();
@@ -117,6 +128,17 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
                 edge.getTo().getId(), // int targetId,
                 "" // String tag
         );
+    }
+
+    private byte[] convertImageToBytes(Image img) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        RenderedImage renderedImage = SwingFXUtils.fromFXImage(img, null);
+        try {
+            ImageIO.write(renderedImage, "png", out);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return out.toByteArray();
     }
 
 }

@@ -20,15 +20,18 @@ public final class SnapshotUtils {
         // todo если ширина и высота не определены, значит нода еще не отрисована
         if(width <= 0 || height <= 0) return null;
 
-        int n = (int) Math.ceil(width / 512);
-        int m = (int) Math.ceil(height / 512);
+        int widthChunk = Math.min(width, 512);
+        int heightChunk = Math.min(height, 512);
+
+        int n = (int) Math.ceil(width / widthChunk);
+        int m = (int) Math.ceil(height / heightChunk);
         final WritableImage result = new WritableImage(width, height);
         for (int col = 0; col < n; col++) {
             for (int row = 0; row < m; row++) {
-                int x = 512 * col;
-                int y = 512 * row;
-                int w = col != (n - 1)? 512 : width - x;
-                int h = row != (m - 1)? 512 : height - y;
+                int x = widthChunk * col;
+                int y = heightChunk * row;
+                int w = col != (n - 1)? widthChunk : width - x;
+                int h = row != (m - 1)? heightChunk : height - y;
                 SnapshotParameters snapshotParameters = new SnapshotParameters();
                 snapshotParameters.setViewport(new Rectangle2D(x, y, w, h));
                 WritableImage snapshot = content.snapshot(snapshotParameters, null);

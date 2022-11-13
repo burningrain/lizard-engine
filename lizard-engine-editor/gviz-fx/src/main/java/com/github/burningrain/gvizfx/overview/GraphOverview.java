@@ -4,6 +4,7 @@ import com.github.burningrain.gvizfx.GraphViewData;
 import com.github.burningrain.gvizfx.property.GraphViewProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 
 public interface GraphOverview {
 
@@ -20,5 +21,7 @@ public interface GraphOverview {
     DoubleProperty fitHeightProperty();
 
     GraphOverviewData getData();
+
+    Image snapshot();
 
 }

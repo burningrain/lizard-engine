@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
+import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
 import com.github.burningrain.lizard.editor.ui.io.ExportImportInnerConverter;
 import com.github.burningrain.lizard.editor.ui.model.Store;
@@ -32,6 +33,9 @@ public class ExportProcessAction implements NotRevertAction {
     @Autowired
     private ExportImportInnerConverter exportImportConverter;
 
+    @Autowired
+    private LizardPluginApi pluginApi;
+
     @Override
     public String getId() {
         return Actions.EXPORT_PROCESS;
@@ -60,7 +64,7 @@ public class ExportProcessAction implements NotRevertAction {
         ImportExportExtPoint importExportPoint = uiUtils.chooseImportExportExtPoint(extension);
         ProcessData processData = exportImportConverter.to(store.getCurrentProjectModel().getProcessViewModel());
         try {
-            Files.write(file.toPath(), importExportPoint.write(processData));
+            Files.write(file.toPath(), importExportPoint.write(pluginApi, processData));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

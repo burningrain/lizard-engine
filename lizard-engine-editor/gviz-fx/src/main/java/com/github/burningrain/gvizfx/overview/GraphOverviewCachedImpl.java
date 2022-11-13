@@ -1,5 +1,6 @@
 package com.github.burningrain.gvizfx.overview;
 
+import com.github.burningrain.gvizfx.SnapshotUtils;
 import com.github.burningrain.gvizfx.property.EdgeProperty;
 import com.github.burningrain.gvizfx.property.GraphViewProperty;
 import com.github.burningrain.gvizfx.element.EdgeElement;
@@ -22,6 +23,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
@@ -273,6 +275,11 @@ public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
 
     public GraphOverviewData getData() {
         return data;
+    }
+
+    @Override
+    public Image snapshot() {
+        return SnapshotUtils.snapshot(canvas);
     }
 
     private Node createVertex(VertexElement element) {

@@ -9,6 +9,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -97,6 +98,11 @@ public class GraphOverviewSnapshotImpl extends Pane implements GraphOverview {
 
     public GraphOverviewData getData() {
         return data;
+    }
+
+    @Override
+    public Image snapshot() {
+        return imageView.getImage();
     }
 
 }
