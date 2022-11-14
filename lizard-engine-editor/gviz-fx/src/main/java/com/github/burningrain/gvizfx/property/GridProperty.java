@@ -15,5 +15,6 @@ public class GridProperty {
     public final SimpleDoubleProperty strokeOffset = new SimpleDoubleProperty(HALF_PIXEL_OFFSET);
     public final SimpleBooleanProperty isSnapToGrid = new SimpleBooleanProperty(false);
     public final SimpleBooleanProperty isShowGrid = new SimpleBooleanProperty(true);
+    public final SimpleBooleanProperty isSnapCenterToCorner = new SimpleBooleanProperty(false);
 
 }

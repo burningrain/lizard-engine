@@ -23,6 +23,9 @@ public class GridSettingsController {
     private CheckBox snapToGridCheckBox;
 
     @FXML
+    private CheckBox snapCenterToCornerCheckBox;
+
+    @FXML
     private ColorPicker gridColorPicker;
 
     @FXML
@@ -48,6 +51,7 @@ public class GridSettingsController {
         invalidationListener = observable -> {
             showGridCheckBox.selectedProperty().set(model.isShowGrid.get());
             snapToGridCheckBox.selectedProperty().set(model.isSnapToGrid.get());
+            snapCenterToCornerCheckBox.selectedProperty().set(model.isSnapCenterToCorner.get());
             strokeOffsetTextField.textProperty().set(model.strokeOffset.get() + "");
             gridSpacingTextField.textProperty().set(model.gridSpacing.get() + "");
             gridColorPicker.valueProperty().set(model.color.get());
@@ -73,6 +77,7 @@ public class GridSettingsController {
         model.strokeOffset.addListener(invalidationListener);
         model.gridSpacing.addListener(invalidationListener);
         model.isSnapToGrid.addListener(invalidationListener);
+        model.isSnapCenterToCorner.addListener(invalidationListener);
         model.isShowGrid.addListener(invalidationListener);
         model.color.addListener(invalidationListener);
 
@@ -84,6 +89,7 @@ public class GridSettingsController {
         model.strokeOffset.removeListener(invalidationListener);
         model.gridSpacing.removeListener(invalidationListener);
         model.isSnapToGrid.removeListener(invalidationListener);
+        model.isSnapCenterToCorner.removeListener(invalidationListener);
         model.isShowGrid.removeListener(invalidationListener);
         model.color.removeListener(invalidationListener);
     }
@@ -95,6 +101,7 @@ public class GridSettingsController {
         model.strokeOffset.set(Double.parseDouble(strokeOffsetTextField.textProperty().get()));
         model.gridSpacing.set(Double.parseDouble(gridSpacingTextField.textProperty().get()));
         model.isSnapToGrid.set(snapToGridCheckBox.selectedProperty().get());
+        model.isSnapCenterToCorner.set(snapCenterToCornerCheckBox.selectedProperty().get());
         model.isShowGrid.set(showGridCheckBox.selectedProperty().get());
         model.color.set(gridColorPicker.valueProperty().get());
 

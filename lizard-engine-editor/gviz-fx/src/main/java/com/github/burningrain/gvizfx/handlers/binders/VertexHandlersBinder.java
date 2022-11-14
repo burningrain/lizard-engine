@@ -2,12 +2,12 @@ package com.github.burningrain.gvizfx.handlers.binders;
 
 import com.github.burningrain.gvizfx.GraphViewData;
 import com.github.burningrain.gvizfx.element.VertexElement;
-import com.github.burningrain.gvizfx.property.GraphViewProperty;
 import com.github.burningrain.gvizfx.handlers.GraphElementHandlers;
 import com.github.burningrain.gvizfx.handlers.GraphViewHandlers;
 import com.github.burningrain.gvizfx.input.DefaultActions;
 import com.github.burningrain.gvizfx.input.InputEventManager;
 import com.github.burningrain.gvizfx.model.*;
+import com.github.burningrain.gvizfx.property.GraphViewProperty;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
@@ -48,20 +48,28 @@ public class VertexHandlersBinder implements GraphHandlersBinder {
 //            offsetX /= scale;
 //            offsetY /= scale;
 
-            double dX = event.getX() - node.getLayoutBounds().getWidth() / 2;
-            double dY = event.getY() - node.getLayoutBounds().getHeight() / 2;
-            if(graphViewProperty.gridProperty.isSnapToGrid.get()) {
+            double halfWidth = node.getLayoutBounds().getWidth() / 2;
+            double halfHeight = node.getLayoutBounds().getHeight() / 2;
+            double dX = event.getX() - halfWidth;
+            double dY = event.getY() - halfHeight;
+            boolean isMovingRight = dX > 0;
+            boolean isMovingUp = dY > 0;
+            if (graphViewProperty.gridProperty.isSnapToGrid.get()) {
                 double spacing = graphViewProperty.gridProperty.gridSpacing.get();
-                dX = (Math.abs(dX) < (spacing/2))? 0 : ((dX > 0)? spacing : -spacing);
-                dY = (Math.abs(dY) < (spacing/2))? 0 : ((dY > 0)? spacing: -spacing);
+                dX = (Math.abs(dX) < (spacing / 2)) ? 0 : (isMovingRight ? spacing : -spacing);
+                dY = (Math.abs(dY) < (spacing / 2)) ? 0 : (isMovingUp ? spacing : -spacing);
 
                 double layoutX = (int) Math.floor(node.getLayoutX());
                 double layoutY = (int) Math.floor(node.getLayoutY());
                 double residueX = layoutX % spacing;
                 double residueY = layoutY % spacing;
 
-                dX += (residueX > 0)? spacing - residueX : -residueX;
-                dY += (residueY > 0)? spacing - residueY : -residueY;
+                dX += (residueX > 0) ? spacing - residueX : -residueX;
+                dY += (residueY > 0) ? spacing - residueY : -residueY;
+                if (graphViewProperty.gridProperty.isSnapCenterToCorner.get()) {
+                    dX -= (halfWidth < spacing) ? halfWidth : (halfWidth - (int) (halfWidth / spacing) * spacing);
+                    dY -= (halfHeight < spacing) ? halfHeight : (halfHeight - (int) (halfHeight / spacing) * spacing);
+                }
             }
             final double deltaX = dX;
             final double deltaY = dY;
@@ -70,8 +78,8 @@ public class VertexHandlersBinder implements GraphHandlersBinder {
                 @Override
                 public void visit(VertexElementWrapper vertexElementWrapper) {
                     Node node = vertexElementWrapper.getElement();
-                    double xCenter = (int)Math.floor(node.getLayoutX());
-                    double yCenter = (int)Math.floor(node.getLayoutY());
+                    double xCenter = (int) Math.floor(node.getLayoutX());
+                    double yCenter = (int) Math.floor(node.getLayoutY());
 
                     node.relocate(xCenter + deltaX, yCenter + deltaY);
                 }

@@ -69,6 +69,7 @@ public class Main extends Application {
 //        }).start();
         GraphViewProperty property = graphView.getProperty();
         property.gridProperty.isSnapToGrid.set(true);
+        property.gridProperty.isSnapCenterToCorner.set(true);
         //property.elementModelProperty.edgeProperty.strokeWidth.set(10);
         //property.elementModelProperty.arrowProperty.length.set(50);
         property.elementModelProperty.edgeProperty.color.set(Color.YELLOWGREEN);

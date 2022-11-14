@@ -28,20 +28,23 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="show grid:" GridPane.rowIndex="1" />
                   <Label text="snap to grid:" GridPane.rowIndex="2" />
-                  <Label text="color:" GridPane.rowIndex="3" />
-                  <Label text="stroke offset:" GridPane.rowIndex="4" />
-                  <Label text="grid spacing:" GridPane.rowIndex="5" />
+                  <Label text="color:" GridPane.rowIndex="4" />
+                  <Label text="stroke offset:" GridPane.rowIndex="5" />
+                  <Label text="grid spacing:" GridPane.rowIndex="6" />
                   <CheckBox fx:id="showGridCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <CheckBox fx:id="snapToGridCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <ColorPicker fx:id="gridColorPicker" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <TextField fx:id="strokeOffsetTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <TextField fx:id="gridSpacingTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <ColorPicker fx:id="gridColorPicker" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <TextField fx:id="strokeOffsetTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <TextField fx:id="gridSpacingTextField" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <Label text="type:" />
                   <ComboBox fx:id="gridTypeComboBox" prefWidth="150.0" GridPane.columnIndex="1" />
+                  <Label text="center to corner:" GridPane.rowIndex="3" />
+                  <CheckBox fx:id="snapCenterToCornerCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
             </GridPane>
             <Button fx:id="applyBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Apply" />
