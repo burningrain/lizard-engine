@@ -9,7 +9,7 @@ import com.github.burningrain.lizard.editor.ui.io.descriptor.ProjectDescriptor;
 import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
 import com.github.burningrain.lizard.editor.ui.model.Store;
-import org.jgrapht.io.ImportException;
+import org.jgrapht.nio.ImportException;
 import org.pf4j.PluginManager;
 
 import java.io.File;
@@ -59,11 +59,7 @@ public class ProjectConverter {
                             .getElementDataConverter(), pluginProcessData));
         });
 
-        ProjectModel projectModel = new ProjectModel();
-        projectModel.setDescriptor(descriptor);
-        projectModel.setProcessViewModel(processViewModel);
-
-        return projectModel;
+        return new ProjectModel(descriptor, processViewModel);
     }
 
     public void saveProject(String path, ProjectModel projectModel) throws IOException {
@@ -77,9 +73,16 @@ public class ProjectConverter {
         }
     }
 
+    public ProjectDescriptor createNewDescriptor(ProcessViewModel processViewModel) {
+        return createNewDescriptor(null, processViewModel);
+    }
+
     private ProjectDescriptor createNewDescriptor(ProjectModel projectModel) {
         ProcessViewModel processViewModel = projectModel.getProcessViewModel();
+        return createNewDescriptor(projectModel, processViewModel);
+    }
 
+    private ProjectDescriptor createNewDescriptor(ProjectModel projectModel, ProcessViewModel processViewModel) {
         ProjectDescriptor newDescriptor = new ProjectDescriptor();
         newDescriptor.setTitle(processViewModel.getProcessName());
         newDescriptor.setDescription(processViewModel.getDescription());
@@ -131,7 +134,11 @@ public class ProjectConverter {
     }
 
     private List<PluginDescriptor> createPluginDescriptorsList(ProjectModel projectModel) {
-        Map<String, PluginDescriptor> oldPluginDescriptors = projectModel.getDescriptor().getPluginDescriptors().stream()
+        Map<String, PluginDescriptor> oldPluginDescriptors = projectModel == null ?
+                Collections.emptyMap() : projectModel
+                .getDescriptor()
+                .getPluginDescriptors()
+                .stream()
                 .collect(Collectors.toMap(
                         pluginDescriptor -> pluginDescriptor.getPluginId(),
                         pluginDescriptor -> pluginDescriptor

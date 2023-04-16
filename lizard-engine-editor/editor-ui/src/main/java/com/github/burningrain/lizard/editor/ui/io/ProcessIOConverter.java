@@ -5,12 +5,14 @@ import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jgrapht.graph.DirectedPseudograph;
-import org.jgrapht.io.*;
+import org.jgrapht.nio.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.github.burningrain.lizard.editor.ui.io.ParamUtils.*;
@@ -26,24 +28,24 @@ public class ProcessIOConverter {
     }
 
     public ProcessViewModel importProcess(InputStream inputStream) throws ImportException {
-        GraphMLImporter<VertexViewModel, EdgeViewModel> importer = new GraphMLImporter<>((s, map) -> {
+        GraphMLImporterModified<VertexViewModel, EdgeViewModel> importer = new GraphMLImporterModified<>();
+        importer.addVertexWithAttributesMapConsumer((viewModel, map) -> {
             String pluginId = mandatory(map.get(GraphAttributes.PLUGIN_ID.name()).getValue());
             String type = mandatory(map.get(GraphAttributes.TYPE.name()).getValue());
             int id = Integer.parseInt(mandatory(map.get(GraphAttributes.ID.name()).getValue()));
-            int coordX = Integer.parseInt(mandatory(map.get(GraphAttributes.COORD_X.name()).getValue()));
-            int coordY = Integer.parseInt(mandatory(map.get(GraphAttributes.COORD_Y.name()).getValue()));
+            float coordX = Float.parseFloat(mandatory(map.get(GraphAttributes.COORD_X.name()).getValue()));
+            float coordY = Float.parseFloat(mandatory(map.get(GraphAttributes.COORD_Y.name()).getValue()));
             String data = optional(map.get(GraphAttributes.DATA.name()), Attribute::getValue);
             String className = optional(map.get(GraphAttributes.CLASSNAME.name()), EMPTY_ATTRIBUTE).getValue();
             String description = optional(map.get(GraphAttributes.DESCRIPTION.name()), EMPTY_ATTRIBUTE).getValue();
 
             ProcessElementType processElementType = ProcessElementType.of(pluginId, type);
             VertexFactoryWrapper vertexFactoryWrapper = store.getVertexFactoryWrapper(processElementType);
-            if(vertexFactoryWrapper == null) {
+            if (vertexFactoryWrapper == null) {
                 vertexFactoryWrapper = VertexFactoryWrapper.createDefault(processElementType);
             }
             ElementDataConverter elementDataConverter = vertexFactoryWrapper.getFactory().getElementDataConverter();
 
-            VertexViewModel viewModel = new VertexViewModel();
             viewModel.setId(id);
             viewModel.setType(processElementType);
             viewModel.setX(coordX);
@@ -54,9 +56,10 @@ public class ProcessIOConverter {
 
             viewModel.setClassName(className);
             viewModel.setDescription(description);
+        });
+        importer.addEdgeWithAttributesMapConsumer((edgeViewModel, triple) -> {
+            Map<String, Attribute> map = triple.getThird();
 
-            return viewModel;
-        }, (v1, v2, s, map) -> {
             String pluginId = mandatory(map.get(GraphAttributes.PLUGIN_ID.name()).getValue());
             String type = mandatory(map.get(GraphAttributes.TYPE.name()).getValue());
             int id = Integer.parseInt(mandatory(map.get(GraphAttributes.ID.name()).getValue()));
@@ -66,16 +69,15 @@ public class ProcessIOConverter {
 
             ProcessElementType processElementType = ProcessElementType.of(pluginId, type);
             EdgeFactoryWrapper edgeFactoryWrapper = store.getEdgeFactoryWrapper(processElementType);
-            if(edgeFactoryWrapper == null) {
+            if (edgeFactoryWrapper == null) {
                 edgeFactoryWrapper = EdgeFactoryWrapper.createDefault(processElementType);
             }
             ElementDataConverter elementDataConverter = edgeFactoryWrapper.getFactory().getElementDataConverter();
 
-            EdgeViewModel edgeViewModel = new EdgeViewModel();
             edgeViewModel.setId(id);
             edgeViewModel.setType(processElementType);
-            edgeViewModel.setVertexSource(v1);
-            edgeViewModel.setVertexTarget(v2);
+            edgeViewModel.setVertexSource(triple.getFirst());
+            edgeViewModel.setVertexTarget(triple.getSecond());
 
             ifNotNull(data, d -> {
                 edgeViewModel.setData(ObjectMapperUtils.createDataFromString(elementDataConverter, d));
@@ -83,11 +85,10 @@ public class ProcessIOConverter {
 
             edgeViewModel.setTag(tag);
             edgeViewModel.setDescription(description);
-
-            return edgeViewModel;
         });
 
-        DirectedPseudograph<VertexViewModel, EdgeViewModel> graph = new DirectedPseudograph<>(EdgeViewModel.class);
+        DirectedPseudograph<VertexViewModel, EdgeViewModel> graph = new DirectedPseudograph<>(
+                () -> new VertexViewModel(), () -> new EdgeViewModel(), false);
         importer.importGraph(graph, inputStream);
 
         ProcessViewModel processViewModel = new ProcessViewModel();
@@ -110,7 +111,7 @@ public class ProcessIOConverter {
                     return viewModel;
                 },
                 (u, v) -> {
-                    throw new IllegalStateException(String.format("Duplicate key %s", u));
+                    throw new IllegalStateException(String.format("The duplicate key %s", u));
                 },
                 FXCollections::observableHashMap
         ));
@@ -138,28 +139,28 @@ public class ProcessIOConverter {
 
     //todo если возникает ошибка, пишется пустой файл, поправить
     private byte[] exportGraph(DirectedPseudograph<VertexViewModel, EdgeViewModel> graph) {
-        GraphMLExporter<VertexViewModel, EdgeViewModel> exporter = new GraphMLExporter<>();
+        GraphMLExporterModified<VertexViewModel, EdgeViewModel> exporter = new GraphMLExporterModified<>();
         exporter.setExportEdgeWeights(false);
 
         //exporter.registerAttribute(GraphAttributes.PROCESS_NAME.name(), GraphMLExporter.AttributeCategory.GRAPH, AttributeType.STRING);
 
         // Общие
-        exporter.registerAttribute(GraphAttributes.ID.name(), GraphMLExporter.AttributeCategory.ALL, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.PLUGIN_ID.name(), GraphMLExporter.AttributeCategory.ALL, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.TYPE.name(), GraphMLExporter.AttributeCategory.ALL, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.DESCRIPTION.name(), GraphMLExporter.AttributeCategory.ALL, AttributeType.STRING, "");
-        exporter.registerAttribute(GraphAttributes.DATA.name(), GraphMLExporter.AttributeCategory.ALL, AttributeType.STRING, null);
+        exporter.registerAttribute(GraphAttributes.ID.name(), GraphMLExporterModified.AttributeCategory.ALL, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.PLUGIN_ID.name(), GraphMLExporterModified.AttributeCategory.ALL, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.TYPE.name(), GraphMLExporterModified.AttributeCategory.ALL, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.DESCRIPTION.name(), GraphMLExporterModified.AttributeCategory.ALL, AttributeType.STRING, "");
+        exporter.registerAttribute(GraphAttributes.DATA.name(), GraphMLExporterModified.AttributeCategory.ALL, AttributeType.STRING, null);
 
         // нода
-        exporter.registerAttribute(GraphAttributes.COORD_X.name(), GraphMLExporter.AttributeCategory.NODE, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.COORD_Y.name(), GraphMLExporter.AttributeCategory.NODE, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.CLASSNAME.name(), GraphMLExporter.AttributeCategory.NODE, AttributeType.STRING, "");
+        exporter.registerAttribute(GraphAttributes.COORD_X.name(), GraphMLExporterModified.AttributeCategory.NODE, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.COORD_Y.name(), GraphMLExporterModified.AttributeCategory.NODE, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.CLASSNAME.name(), GraphMLExporterModified.AttributeCategory.NODE, AttributeType.STRING, "");
 
         // дуга
-        exporter.registerAttribute(GraphAttributes.NODE_SOURCE.name(), GraphMLExporter.AttributeCategory.EDGE, AttributeType.STRING);
-        exporter.registerAttribute(GraphAttributes.NODE_TARGET.name(), GraphMLExporter.AttributeCategory.EDGE, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.NODE_SOURCE.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.NODE_TARGET.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING);
         // думаю, если дуга всего одна, то тег можно не указывать
-        exporter.registerAttribute(GraphAttributes.TAG.name(), GraphMLExporter.AttributeCategory.EDGE, AttributeType.STRING, "");
+        exporter.registerAttribute(GraphAttributes.TAG.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING, "");
 
         exporter.setVertexAttributeProvider(vertexViewModel -> {
             Integer id = mandatory(vertexViewModel.getId());
@@ -174,7 +175,7 @@ public class ProcessIOConverter {
             ProcessElementType type = vertexViewModel.getType();
 
             VertexFactoryWrapper vertexFactoryWrapper = store.getVertexFactoryWrapper(type);
-            if(vertexFactoryWrapper == null) {
+            if (vertexFactoryWrapper == null) {
                 vertexFactoryWrapper = VertexFactoryWrapper.createDefault(type);
             }
             ElementDataConverter elementDataConverter = vertexFactoryWrapper.getFactory().getElementDataConverter();
@@ -191,7 +192,7 @@ public class ProcessIOConverter {
             result.put(GraphAttributes.COORD_Y.name(), DefaultAttribute.createAttribute(vertexViewModel.getY()));
 
             ifNotNull(data, d -> {
-                if(elementDataConverter == null) {
+                if (elementDataConverter == null) {
                     //todo вывести предупреждение
                     return;
                 }
@@ -215,7 +216,7 @@ public class ProcessIOConverter {
 
             ProcessElementType type = edgeViewModel.getType();
             EdgeFactoryWrapper edgeFactoryWrapper = store.getEdgeFactoryWrapper(type);
-            if(edgeFactoryWrapper == null) {
+            if (edgeFactoryWrapper == null) {
                 edgeFactoryWrapper = EdgeFactoryWrapper.createDefault(type);
             }
             ElementDataConverter elementDataConverter = edgeFactoryWrapper.getFactory().getElementDataConverter();
@@ -230,7 +231,7 @@ public class ProcessIOConverter {
 
             result.put(GraphAttributes.DESCRIPTION.name(), DefaultAttribute.createAttribute(description));
             ifNotNull(data, d -> {
-                if(elementDataConverter == null) {
+                if (elementDataConverter == null) {
                     //todo вывести предупреждение
                     return;
                 }
