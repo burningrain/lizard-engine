@@ -8,7 +8,7 @@ import java.io.Serializable;
 public interface VertexFactory<
         M extends Serializable,
         N extends Node,
-        I extends NodeContainer> extends EditorElementFactory<M, N, I, VertexModelBinder<M, N>, NodeData> {
+        I extends NodeContainer> extends EditorElementFactory<M, N, I, VertexModelBinder<? extends M, ? extends N>, NodeData> {
 
 
 }

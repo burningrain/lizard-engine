@@ -4,7 +4,6 @@ import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
 import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
-import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -94,6 +93,9 @@ public class CustomProcessInspectorController extends CustomInspectorController<
 
         @Override
         public void init(LizardUiApi lizardUiApi) {
+            for (NodeContainer nodeContainer : nodeMap.values()) {
+                nodeContainer.init(lizardUiApi);
+            }
         }
 
     }

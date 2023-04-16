@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="gridPane" hgap="4.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vgap="4.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18">
+  <columnConstraints>
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints vgrow="SOMETIMES" />
+    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TextField fx:id="nameTextField" GridPane.columnIndex="1" />
+      <TextField fx:id="fromTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField fx:id="toTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="frameFrequencyTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label text="name:" />
+      <Label text="from:" GridPane.rowIndex="1" />
+      <Label text="to:" GridPane.rowIndex="2" />
+      <Label text="frame frequency:" GridPane.rowIndex="3" />
+      <Label text="mode:" GridPane.rowIndex="4" />
+      <Label text="looping:" GridPane.rowIndex="5" />
+      <ComboBox fx:id="modeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <CheckBox fx:id="loopingCheckbox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+   </children>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</GridPane>

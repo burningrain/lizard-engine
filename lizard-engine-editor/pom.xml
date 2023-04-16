@@ -15,8 +15,9 @@
     <modules>
         <module>editor-ui</module>
         <module>editor-api</module>
-        <module>planetbot-lizard-editor-plugin</module>
         <module>gviz-fx</module>
+        <module>planetbot-lizard-editor-plugin</module>
+        <module>libgdx-simple-animation-lizard-editor-plugin</module>
     </modules>
 
     <dependencyManagement>

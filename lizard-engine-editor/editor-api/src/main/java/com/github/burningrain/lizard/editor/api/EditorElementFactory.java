@@ -10,7 +10,7 @@ public interface EditorElementFactory<
         M extends Serializable,
         N extends Node,
         I extends NodeContainer,
-        E extends ElementModelBinder<M, N>,
+        E extends ElementModelBinder<? extends M, ? extends N>,
         D extends LizardData
         > {
 

@@ -24,7 +24,6 @@ import static com.github.burningrain.planetbot.lizard.editor.plugin.io.Constants
 @Extension
 public class ImportExportExtPointImpl implements ImportExportExtPoint {
 
-
     private final ZipMapConverter mapConverter = new ZipMapConverter();
 
     @Override
