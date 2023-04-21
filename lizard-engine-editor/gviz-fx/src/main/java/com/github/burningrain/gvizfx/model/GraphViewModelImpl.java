@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.scene.Node;
+import javafx.scene.transform.Scale;
 
 import java.util.Objects;
 
@@ -20,6 +21,8 @@ public class GraphViewModelImpl implements GraphViewModel {
     private final SimpleGraphElementProperty elementModel;
 
     private EdgeFactory<? extends EdgeElement> edgeFactory = new LineEdgeFactory();
+
+    private final Scale scale = new Scale(1, 1, 1);
 
     public GraphViewModelImpl(SimpleGraphElementProperty graphElementModel) {
         this.elementModel = graphElementModel;
@@ -56,9 +59,9 @@ public class GraphViewModelImpl implements GraphViewModel {
         Node targetNode = target.getElement();
         //fixme ну хак же
         if (Validator.isNeedRunLater(sourceNode) || Validator.isNeedRunLater(targetNode)) {
-            Platform.runLater(() -> edgeElement.bind(sourceNode, targetNode));
+            Platform.runLater(() -> edgeElement.bind(sourceNode, targetNode, scale));
         } else {
-            edgeElement.bind(sourceNode, targetNode);
+            edgeElement.bind(sourceNode, targetNode, scale);
         }
 
         return edgeElement;

@@ -6,6 +6,7 @@ import com.sun.javafx.geom.Point2D;
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Scale;
 
 public class LineEdgeElement extends EdgeElement<Line, ArrowLineEdgeElement> {
     public LineEdgeElement(String graphElementId,
@@ -41,23 +42,23 @@ public class LineEdgeElement extends EdgeElement<Line, ArrowLineEdgeElement> {
     }
 
     @Override
-    protected void recalculateElement(Node source, Node target) {
-        double sourceCenterX = getPointsCoord(source.getBoundsInLocal().getWidth(), source.getLayoutX());
-        double sourceCenterY = getPointsCoord(source.getBoundsInLocal().getHeight(), source.getLayoutY());
+    protected void recalculateElement(Node source, Node target, Scale scale) {
+        double sourceCenterX = getPointsCoord(source.getBoundsInLocal().getWidth() * scale.getX(), source.getLayoutX());
+        double sourceCenterY = getPointsCoord(source.getBoundsInLocal().getHeight() * scale.getY(), source.getLayoutY());
 
         Line line = getEdge();
 
         line.startXProperty().set(sourceCenterX);
         line.startYProperty().set(sourceCenterY);
 
-        double targetCenterX = getPointsCoord(target.getBoundsInLocal().getWidth(), target.getLayoutX());
-        double targetCenterY = getPointsCoord(target.getBoundsInLocal().getHeight(), target.getLayoutY());
+        double targetCenterX = getPointsCoord(target.getBoundsInLocal().getWidth() * scale.getX(), target.getLayoutX());
+        double targetCenterY = getPointsCoord(target.getBoundsInLocal().getHeight() * scale.getY(), target.getLayoutY());
 
         //todo копипаста, исправить
         double startLeftX = source.getLayoutX();
-        double startRightX = startLeftX + source.getBoundsInLocal().getWidth();
+        double startRightX = startLeftX + source.getBoundsInLocal().getWidth() * scale.getX();
         double startTopY = source.getLayoutY();
-        double startBottomY = startTopY + source.getBoundsInLocal().getHeight();
+        double startBottomY = startTopY + source.getBoundsInLocal().getHeight() * scale.getY();
         Point2D startPoint = intersectRectangle(sourceCenterX, sourceCenterY, targetCenterX, targetCenterY, startLeftX, startRightX, startTopY, startBottomY);
 
         if (startPoint != null) {
@@ -66,9 +67,9 @@ public class LineEdgeElement extends EdgeElement<Line, ArrowLineEdgeElement> {
         }
 
         double endLeftX = target.getLayoutX();
-        double endRightX = endLeftX + target.getBoundsInLocal().getWidth();
+        double endRightX = endLeftX + target.getBoundsInLocal().getWidth() * scale.getX();
         double endTopY = target.getLayoutY();
-        double endBottomY = endTopY + target.getBoundsInLocal().getHeight();
+        double endBottomY = endTopY + target.getBoundsInLocal().getHeight() * scale.getY();
         Point2D endPoint = intersectRectangle(sourceCenterX, sourceCenterY, targetCenterX, targetCenterY, endLeftX, endRightX, endTopY, endBottomY);
 
         if (endPoint != null) {
@@ -93,20 +94,6 @@ public class LineEdgeElement extends EdgeElement<Line, ArrowLineEdgeElement> {
                 topY, bottomY
         );
     }
-
-//    public LineEdgeNode(String edgeId, boolean isDirectional) {
-//        this(edgeId, isDirectional, null);
-//    }
-//
-//    public LineEdgeNode(String edgeId, boolean isDirectional, Node userNode) {
-//        super(
-//                edgeId,
-//                isDirectional,
-//                new LineEdgeElement(edgeId + "_line"),
-//                () -> new ArrowLineEdgeElement(edgeId + "_arrow"),
-//                userNode == null? null : new UserNodeLineElement(userNode)
-//        );
-//    }
 
 
 }

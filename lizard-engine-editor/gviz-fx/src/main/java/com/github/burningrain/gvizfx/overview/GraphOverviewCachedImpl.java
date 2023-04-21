@@ -28,10 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
-import javafx.scene.text.Text;
-
-import java.util.Map;
+import javafx.scene.transform.Scale;
 
 public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
 
@@ -47,12 +44,15 @@ public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
     private final ObservableMap<String, Node> vertexesMap = FXCollections.observableHashMap();
     private final ObservableMap<String, Node> edgesMap = FXCollections.observableHashMap();
 
+    private final Scale minimapScale = new Scale();
+
     private final MapChangeListener<String, VertexElementWrapper> vertexesListener = change -> {
         if (change.wasAdded()) {
             addVertexToMinimap(change.getValueAdded());
         } else if (change.wasRemoved()) {
             VertexElementWrapper valueRemoved = change.getValueRemoved();
             Node imageView = vertexesMap.remove(valueRemoved.getElement().getGraphElementId());
+
             canvas.getChildren().remove(imageView);
             imageView.layoutXProperty().unbind();
             imageView.layoutYProperty().unbind();
@@ -108,7 +108,7 @@ public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
         EdgeFactory<? extends EdgeElement> edgeFactory = graphViewModel.getEdgeFactory();
         EdgeElement overviewEdge = edgeFactory.createEdge(element.getGraphElementId(), false, isSelf, null);
         overviewEdge.setElementModel(graphViewProperty.elementModelProperty);
-        overviewEdge.bind(vertexesMap.get(source.getElementId()), vertexesMap.get(target.getElementId()));
+        overviewEdge.bind(vertexesMap.get(source.getElementId()), vertexesMap.get(target.getElementId()), minimapScale);
 
         EdgeProperty originEdgeProperty = edgeElementWrapper.getElement().getEdgeProperty();
         overviewEdge.getEdgeProperty().bind(originEdgeProperty);
@@ -132,81 +132,23 @@ public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
     private final ChangeListener<Bounds> contentResize = new ChangeListener<>() {
         @Override
         public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-            GraphViewModel viewModel = graphViewData.getGraphViewModel();
-            for (Map.Entry<String, Node> entry : vertexesMap.entrySet()) {
-                resizeGraphNode(viewModel.verticesProperty().get(entry.getKey()).getElement(), entry.getValue(), newValue);
-            }
-            for (Map.Entry<String, Node> entry : edgesMap.entrySet()) {
-                //TODO
-            }
+            Bounds scrollPaneLayoutBounds = newValue;
+            double scrollPaneWidth = scrollPaneLayoutBounds.getWidth();
+            double scrollPaneHeight = scrollPaneLayoutBounds.getHeight();
+            double ratioWidth = canvas.getWidth() / scrollPaneWidth;
+            double ratioHeight = canvas.getHeight() / scrollPaneHeight;
+
+            changeMinimapScale(ratioWidth, ratioHeight);
         }
     };
 
-    private void resizeGraphNode(Node originElement, Node minimapNode, Bounds scrollPaneLayoutBounds) {
-        double scrollPaneWidth = scrollPaneLayoutBounds.getWidth();
-        double scrollPaneHeight = scrollPaneLayoutBounds.getHeight();
-
-        Bounds nodeLayoutBounds = originElement.getLayoutBounds();
-        int width = (int) nodeLayoutBounds.getWidth();
-        int height = (int) nodeLayoutBounds.getHeight();
-
-        int newWidth = (int) (width * canvas.getWidth() / scrollPaneWidth);
-        int newHeight = (int) (height * canvas.getHeight() / scrollPaneHeight);
-
-        if (minimapNode instanceof ImageView imageView) {
-            scaleImage(imageView, newWidth, newHeight, true);
-        } else {
-            setNodeWidthAndHeight(minimapNode, newWidth, newHeight, (float)height/width);
-        }
+    private void setScaleTransform(Node minimapNode) {
+        minimapNode.getTransforms().add(minimapScale);
     }
 
-    protected void setNodeWidthAndHeight(Node minimapNode, int newWidth, int newHeight, float ratio) {
-        double w = Math.max(newWidth, graphOverviewProperty.minVertexWidth.get());
-        double h = Math.max(newHeight, graphOverviewProperty.minVertexHeight.get());
-
-        double rw = h / ratio;
-        double rh = w * ratio;
-        if(minimapNode instanceof Region region) {
-            region.setMaxHeight(w);
-            region.setMinWidth(w);
-            region.setPrefWidth(w);
-
-            region.setPrefHeight(h);
-            region.setMinHeight(h);
-            region.setMaxHeight(h);
-        } else if(minimapNode instanceof Shape shape) {
-            if(shape instanceof Circle circle) {
-                double d = (newWidth + newHeight) >> 1;
-                double r = d / 2;
-                circle.setRadius(r);
-                circle.setCenterX(r);
-                circle.setCenterY(r);
-            } else if (shape instanceof Rectangle rectangle) {
-                rectangle.setWidth(w);
-                rectangle.setHeight(h);
-            } else if (shape instanceof Text text) {
-                text.setWrappingWidth(w);
-            } else if (shape instanceof Path path) {
-                //TODO подумать над веми этими ифами
-            } else if (shape instanceof Line line) {
-
-            } else if (shape instanceof CubicCurve cubicCurve) {
-
-            } else if (shape instanceof Ellipse ellipse) {
-
-            } else if (shape instanceof SVGPath) {
-
-            } else if (shape instanceof Arc) {
-
-            } else if (shape instanceof Polygon) {
-
-            } else if (shape instanceof Polyline polyline) {
-
-            } else if (shape instanceof QuadCurve quadCurve) {
-
-            }
-        }
-
+    protected void changeMinimapScale(double ratioWidth, double ratioHeight) {
+        minimapScale.setX(ratioWidth);
+        minimapScale.setY(ratioHeight);
     }
 
     @Override
@@ -285,7 +227,7 @@ public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
     private Node createVertex(VertexElement element) {
         Node copyWithBindings = element.copyNodeForMinimap();
         if (copyWithBindings != null) {
-            resizeGraphNode(element, copyWithBindings, this.graphViewData.getScrollPane().getContent().getLayoutBounds());
+            setScaleTransform(copyWithBindings);
             return copyWithBindings;
         }
 

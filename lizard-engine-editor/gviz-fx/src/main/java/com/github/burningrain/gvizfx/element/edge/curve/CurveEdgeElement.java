@@ -6,6 +6,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
+import javafx.scene.transform.Scale;
 
 public class CurveEdgeElement extends EdgeElement<Path, ArrowCurveEdgeElement> {
 
@@ -52,7 +53,7 @@ public class CurveEdgeElement extends EdgeElement<Path, ArrowCurveEdgeElement> {
     }
 
     @Override
-    protected void recalculateElement(Node source, Node target) {
+    protected void recalculateElement(Node source, Node target, Scale scale) {
         Path path = getEdge();
         MoveTo moveTo = (MoveTo) path.getElements().get(0);
         QuadCurveTo quadCurveTo = (QuadCurveTo) path.getElements().get(1);

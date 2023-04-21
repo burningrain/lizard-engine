@@ -5,6 +5,7 @@ import com.github.burningrain.gvizfx.element.edge.ArrowPolylineEdgeElement;
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
+import javafx.scene.transform.Scale;
 
 public class PolylineSelfEdgeElement extends EdgeElement<Polyline, ArrowPolylineEdgeElement> {
 
@@ -44,13 +45,13 @@ public class PolylineSelfEdgeElement extends EdgeElement<Polyline, ArrowPolyline
     }
 
     @Override
-    protected void recalculateElement(Node source, Node target) {
+    protected void recalculateElement(Node source, Node target, Scale scale) {
         Polyline polyline = getEdge();
 
         polyline.getPoints().clear();
 
-        double width = source.getBoundsInLocal().getWidth();
-        double height = source.getBoundsInLocal().getHeight();
+        double width = source.getBoundsInLocal().getWidth() * scale.getX();
+        double height = source.getBoundsInLocal().getHeight() * scale.getY();
 
         double startLeftX = source.getLayoutX();
         double startRightX = startLeftX + width;

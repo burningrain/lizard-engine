@@ -12,6 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.transform.Scale;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -59,7 +60,7 @@ public abstract class EdgeElement<
 
     protected abstract void deselectEdge(E edge, Paint color);
 
-    protected abstract void recalculateElement(Node source, Node target);
+    protected abstract void recalculateElement(Node source, Node target, Scale scale);
 
     @Override
     public void setElementModel(SimpleGraphElementProperty elementModel) {
@@ -67,8 +68,8 @@ public abstract class EdgeElement<
         edgeProperty.bind(elementModel.edgeProperty);
     }
 
-    public void bind(Node source, Node target) {
-        bindEdge(source, target);
+    public void bind(Node source, Node target, Scale scale) {
+        bindEdge(source, target, scale);
         getNode().getChildren().add(edge);
 
         isDirectionalListener = (observable, oldValue, newValue) -> {
@@ -139,9 +140,9 @@ public abstract class EdgeElement<
         }
     }
 
-    protected void bindEdge(Node source, Node target) {
+    protected void bindEdge(Node source, Node target, Scale scale) {
         recalculateElementListener = observable -> {
-            recalculateElement(source, target);
+            recalculateElement(source, target, scale);
         };
 
         source.layoutXProperty().addListener(recalculateElementListener);
@@ -149,7 +150,7 @@ public abstract class EdgeElement<
         target.layoutXProperty().addListener(recalculateElementListener);
         target.layoutYProperty().addListener(recalculateElementListener);
 
-        recalculateElement(source, target);
+        recalculateElement(source, target, scale);
     }
 
     protected void bindArrow(E edgeNode, Node source, Node target) {
