@@ -74,6 +74,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
                 createTransitionAttributes(transition),     // Map<String, String> attributes,
                 nodeData.get(transition.getFrom()).getId(), // int sourceId,
                 nodeData.get(transition.getTo()).getId(),   // int targetId,
+                true,
                 ""                                          // String tag
         );
     }

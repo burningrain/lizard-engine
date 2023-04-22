@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.editor.api.ext;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.ProjectLifecycleListener;
 import org.pf4j.ExtensionPoint;
 import com.github.burningrain.lizard.editor.api.EdgeFactory;
 import com.github.burningrain.lizard.editor.api.VertexFactory;
@@ -14,5 +15,7 @@ public interface ProcessElementsExtPoint extends ExtensionPoint {
     List<VertexFactory> getVertexFactoriesList();
 
     List<EdgeFactory> getEdgeFactoriesList();
+
+    ProjectLifecycleListener getProjectLifecycleListener();
 
 }

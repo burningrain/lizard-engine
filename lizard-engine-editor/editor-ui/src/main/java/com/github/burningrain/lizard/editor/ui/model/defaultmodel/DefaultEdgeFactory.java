@@ -33,4 +33,8 @@ public class DefaultEdgeFactory implements EdgeFactory<DefaultGraphElementModel,
         return DefaultElementFactory.createDataConverter();
     }
 
+    @Override
+    public boolean isEdgeDirectional() {
+        return true;
+    }
 }

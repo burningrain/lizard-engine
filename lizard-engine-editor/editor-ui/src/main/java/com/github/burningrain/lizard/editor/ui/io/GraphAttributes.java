@@ -21,6 +21,7 @@ public enum GraphAttributes {
     NODE_SOURCE,
     NODE_TARGET,
     TAG,
+    IS_DIRECTIONAL
     ;
 
 }

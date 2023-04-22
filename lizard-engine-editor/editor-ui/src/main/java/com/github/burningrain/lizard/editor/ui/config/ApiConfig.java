@@ -16,8 +16,8 @@ import com.github.burningrain.lizard.editor.api.LizardUiApi;
 public class ApiConfig {
 
     @Bean
-    LizardUiApi lizardUiApi(UiUtils uiUtils, Store store) {
-        return new LizardUiApiImpl(uiUtils, store);
+    LizardUiApi lizardUiApi(UiUtils uiUtils, Store store, GraphView graphView) {
+        return new LizardUiApiImpl(uiUtils, store, graphView);
     }
 
     @Bean

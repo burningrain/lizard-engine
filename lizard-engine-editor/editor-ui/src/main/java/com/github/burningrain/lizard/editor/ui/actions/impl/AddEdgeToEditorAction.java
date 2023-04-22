@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
+import com.github.burningrain.lizard.editor.api.EdgeFactory;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.ObservableMap;
@@ -41,20 +42,21 @@ public class AddEdgeToEditorAction implements RevertAction {
         //todo сделать поддержку добавления нод и дуг в упрощенном режиме
         EdgeFactoryWrapper edgeFactoryWrapper = store.getProcessElements()
                 .get(selectedEdgeType.getPluginId()).getEdgeFactories().get(selectedEdgeType.getElementName());
-        EdgeModelBinder elementModelBinder = (EdgeModelBinder) edgeFactoryWrapper.getFactory().getElementModelBinder();
+        EdgeFactory factory = edgeFactoryWrapper.getFactory();
+        EdgeModelBinder elementModelBinder = (EdgeModelBinder) factory.getElementModelBinder();
 
         ObservableMap vertexes = store.getCurrentProjectModel().getProcessViewModel().getVertexes();
         VertexViewModel sourceViewModel = (VertexViewModel) vertexes.get(source);
         VertexViewModel targetViewModel = (VertexViewModel) vertexes.get(target);
 
         edgeViewModel = new EdgeViewModel();
-        edgeViewModel.setDirectional(false); //TODO дать возможность выбора в редакторе из-под плагина
         if(elementModelBinder != null) {
             edgeViewModel.dataProperty().set(elementModelBinder.createNewNodeModel());
         }
-        edgeViewModel.setId(new Random().nextInt());
+        edgeViewModel.setId(new Random().nextInt()); // todo а вот так не надо на самом деле. Нужен генератор идентификаторов
         edgeViewModel.setVertexSource(sourceViewModel);
         edgeViewModel.setVertexTarget(targetViewModel);
+        edgeViewModel.setDirectional(factory.isEdgeDirectional());
 
         edgeViewModel.setType(edgeFactoryWrapper.getType());
 

@@ -1,6 +1,7 @@
 package com.github.burningrain.planetbot.lizard.editor.plugin;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.ProjectLifecycleListener;
 import com.github.burningrain.planetbot.lizard.editor.plugin.process.PlanetBotProcessInspector;
 import com.github.burningrain.planetbot.lizard.editor.plugin.process.PlanetBotProcessModel;
 import com.github.burningrain.planetbot.lizard.editor.plugin.process.PropertiesInspectorBinderPlanetBotImpl;
@@ -30,6 +31,11 @@ public class ProcessElementsExtPointPlanetBotImpl implements ProcessElementsExtP
     @Override
     public List<EdgeFactory> getEdgeFactoriesList() {
         return Arrays.asList(new PlanetBotEdgeFactory());
+    }
+
+    @Override
+    public ProjectLifecycleListener getProjectLifecycleListener() {
+        return null;
     }
 
 }

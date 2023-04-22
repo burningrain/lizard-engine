@@ -79,6 +79,7 @@ public class ExportImportInnerConverter {
             edgeViewModel.setType(type);
             edgeViewModel.setVertexSource(vertexes.get(transitionData.getSourceId()));
             edgeViewModel.setVertexTarget(vertexes.get(transitionData.getTargetId()));
+            edgeViewModel.setDirectional(transitionData.isDirectional());
 
             EdgeFactoryWrapper edgeFactoryWrapper = store.getProcessElements().get(type.getPluginId()).getEdgeFactories().get(type.getElementName());
             Map<String, String> attributes = transitionData.getAttributes();
@@ -159,6 +160,7 @@ public class ExportImportInnerConverter {
                     (elementDataConverter == null) ? null : elementDataConverter.exportNodeData(e.getData()),
                     e.getVertexSource().getId(),
                     e.getVertexTarget().getId(),
+                    e.isDirectional(),
                     e.getTag()
             );
         }).collect(Collectors.toList());

@@ -11,4 +11,6 @@ public interface EdgeFactory<
         I extends NodeContainer
         > extends EditorElementFactory<M, N, I, EdgeModelBinder<M, N>, TransitionData> {
 
+    boolean isEdgeDirectional();
+
 }

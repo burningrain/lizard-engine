@@ -5,10 +5,17 @@ import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.process.
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.VertexElementDataConverterImpl;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.VertexPropertiesInspectorBinder;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.binder.VertexModelBinderImpl;
-import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.factory.*;
-import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.*;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.factory.AnyStateVertexFactory;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.factory.EndStateVertexFactory;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.factory.IntermediateEndStateVertexFactory;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.factory.StartStateVertexFactory;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.AnyStateUI;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.EndStateUI;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.IntermediateStateUI;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.StartStateUI;
 import com.github.burningrain.lizard.editor.api.EdgeFactory;
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.ProjectLifecycleListener;
 import com.github.burningrain.lizard.editor.api.VertexFactory;
 import com.github.burningrain.lizard.editor.api.ext.ProcessElementsExtPoint;
 import org.pf4j.Extension;
@@ -40,6 +47,11 @@ public class ProcessElementsExtPointImpl implements ProcessElementsExtPoint {
     @Override
     public List<EdgeFactory> getEdgeFactoriesList() {
         return Arrays.asList(new SimpleAnimationEdgeFactory());
+    }
+
+    @Override
+    public ProjectLifecycleListener getProjectLifecycleListener() {
+        return new ProjectLifecycleListenerImpl();
     }
 
 }

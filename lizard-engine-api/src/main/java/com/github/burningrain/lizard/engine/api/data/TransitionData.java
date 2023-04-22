@@ -7,6 +7,7 @@ public class TransitionData extends ProcessElementData {
     private final int sourceId;
     private final int targetId;
     private final String tag;
+    private final boolean isDirectional;
 
     public TransitionData(int id,
                           String pluginId,
@@ -15,10 +16,12 @@ public class TransitionData extends ProcessElementData {
                           Map<String, String> attributes,
                           int sourceId,
                           int targetId,
+                          boolean isDirectional,
                           String tag) {
         super(id, pluginId, title, description, attributes);
         this.sourceId = sourceId;
         this.targetId = targetId;
+        this.isDirectional = isDirectional;
         this.tag = tag;
     }
 
@@ -34,6 +37,10 @@ public class TransitionData extends ProcessElementData {
         return tag;
     }
 
+    public boolean isDirectional() {
+        return isDirectional;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -42,6 +49,7 @@ public class TransitionData extends ProcessElementData {
                 .append(super.toString())
                 .append("sourceId=[").append(sourceId).append("]\n")
                 .append("targetId=[").append(targetId).append("]\n")
+                .append("isDirectional=[").append(isDirectional).append("]\n")
                 .append("tag=[").append(tag).append("]\n")
         ;
         return builder.toString();

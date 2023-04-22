@@ -32,4 +32,9 @@ public class PlanetBotEdgeFactory implements EdgeFactory<PlanetBotEdgeModel, Nod
         return null;
     }
 
+    @Override
+    public boolean isEdgeDirectional() {
+        return false;
+    }
+
 }

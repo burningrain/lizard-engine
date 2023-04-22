@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.api.impl;
 
+import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.utils.UiUtils;
 import javafx.stage.Stage;
@@ -12,10 +13,17 @@ public class LizardUiApiImpl implements LizardUiApi {
 
     private final UiUtils uiUtils;
     private final Store store;
+    private final GraphView graphView;
 
-    public LizardUiApiImpl(UiUtils uiUtils, Store store) {
+    public LizardUiApiImpl(UiUtils uiUtils, Store store, GraphView graphView) {
         this.uiUtils = uiUtils;
         this.store = store;
+        this.graphView = graphView;
+    }
+
+    @Override
+    public GraphView getGraphView() {
+        return graphView;
     }
 
     @Override

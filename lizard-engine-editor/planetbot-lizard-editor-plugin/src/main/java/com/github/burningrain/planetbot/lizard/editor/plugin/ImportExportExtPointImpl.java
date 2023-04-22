@@ -121,6 +121,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
                 Collections.emptyMap(), // Map<String, String> attributes,
                 edge.getFrom().getId(), // int sourceId,
                 edge.getTo().getId(), // int targetId,
+                false,
                 "" // String tag
         );
     }

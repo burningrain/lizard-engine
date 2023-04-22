@@ -35,4 +35,9 @@ public class SimpleAnimationEdgeFactory implements EdgeFactory<SimpleAnimationEd
         return dataConverter;
     }
 
+    @Override
+    public boolean isEdgeDirectional() {
+        return true;
+    }
+
 }

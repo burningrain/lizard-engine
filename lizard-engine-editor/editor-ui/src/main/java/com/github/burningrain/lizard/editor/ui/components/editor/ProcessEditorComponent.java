@@ -2,10 +2,7 @@ package com.github.burningrain.lizard.editor.ui.components.editor;
 
 import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.model.*;
-import com.github.burningrain.lizard.editor.api.EdgeFactory;
-import com.github.burningrain.lizard.editor.api.EdgeModelBinder;
-import com.github.burningrain.lizard.editor.api.VertexFactory;
-import com.github.burningrain.lizard.editor.api.VertexModelBinder;
+import com.github.burningrain.lizard.editor.api.*;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsm;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsmImpl;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.States;
@@ -13,6 +10,7 @@ import com.github.burningrain.lizard.editor.ui.core.UiComponent;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import com.github.burningrain.lizard.editor.ui.utils.FxUtils;
 import javafx.beans.property.SimpleStringProperty;
@@ -224,16 +222,24 @@ public class ProcessEditorComponent implements UiComponent<BorderPane> {
         store.currentProjectModelProperty().addListener(observable -> {
             graphViewModel.clear();
             linkListenersToCurrentProcess(graphViewModel);
-            ProcessViewModel currentProcessViewModel = store.getCurrentProjectModel().getProcessViewModel();
+            ProjectModel currentProjectModel = store.getCurrentProjectModel();
+            //TODO сделать привязку конкретного плагина к конкретному виду фабрики ребер графа
+            Optional<ProcessElementsWrapper> optionalFirst = store.getProcessElements().values().stream().findFirst();
+            optionalFirst.ifPresent(processElementsWrapper -> {
+                Optional<ProjectLifecycleListener> first = processElementsWrapper.getProjectListeners().values().stream().findFirst();
+                first.ifPresent(projectLifecycleListener -> {
+                    projectLifecycleListener.handleOpenProjectEvent(graphView);
+                });
+            });
+
+            ProcessViewModel currentProcessViewModel = currentProjectModel.getProcessViewModel();
             currentProcessViewModel.getVertexes().values().forEach((Consumer<VertexViewModel>) vertexViewModel -> {
                 showVertex(graphViewModel, vertexViewModel);
             });
             currentProcessViewModel.getEdges().values().forEach((Consumer<EdgeViewModel>) edgeViewModel -> {
                 showEdge(graphViewModel, edgeViewModel);
             });
-
             //TODO сделать привязку конкретного плагина к конкретному виду фабрики ребер графа
-            Optional<ProcessElementsWrapper> optionalFirst = store.getProcessElements().values().stream().findFirst();
             optionalFirst.ifPresent(processElementsWrapper -> {
                 Optional<EdgeFactoryWrapper> first = processElementsWrapper.getEdgeFactories().values().stream().findFirst();
                 currentProcessViewModel.selectedEdgeTypeProperty().set(first.get().getType());

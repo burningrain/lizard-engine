@@ -12,10 +12,10 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.github.burningrain.lizard.editor.ui.io.ParamUtils.*;
+import static com.github.burningrain.lizard.editor.ui.io.ParamUtils.mandatory;
 
 public class ProcessIOConverter {
 
@@ -66,6 +66,7 @@ public class ProcessIOConverter {
             String data = optional(map.get(GraphAttributes.DATA.name()), Attribute::getValue);
             String description = optional(map.get(GraphAttributes.DESCRIPTION.name()), EMPTY_ATTRIBUTE).getValue();
             String tag = optional(map.get(GraphAttributes.TAG.name()), EMPTY_ATTRIBUTE).getValue();
+            boolean isDirectional = Boolean.parseBoolean(mandatory(map.get(GraphAttributes.IS_DIRECTIONAL.name()).getValue()));
 
             ProcessElementType processElementType = ProcessElementType.of(pluginId, type);
             EdgeFactoryWrapper edgeFactoryWrapper = store.getEdgeFactoryWrapper(processElementType);
@@ -78,6 +79,7 @@ public class ProcessIOConverter {
             edgeViewModel.setType(processElementType);
             edgeViewModel.setVertexSource(triple.getFirst());
             edgeViewModel.setVertexTarget(triple.getSecond());
+            edgeViewModel.setDirectional(isDirectional);
 
             ifNotNull(data, d -> {
                 edgeViewModel.setData(ObjectMapperUtils.createDataFromString(elementDataConverter, d));
@@ -159,6 +161,7 @@ public class ProcessIOConverter {
         // дуга
         exporter.registerAttribute(GraphAttributes.NODE_SOURCE.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING);
         exporter.registerAttribute(GraphAttributes.NODE_TARGET.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING);
+        exporter.registerAttribute(GraphAttributes.IS_DIRECTIONAL.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING, "");
         // думаю, если дуга всего одна, то тег можно не указывать
         exporter.registerAttribute(GraphAttributes.TAG.name(), GraphMLExporterModified.AttributeCategory.EDGE, AttributeType.STRING, "");
 
@@ -210,6 +213,7 @@ public class ProcessIOConverter {
             String name = mandatory(edgeViewModel.getType().getElementName());
             Integer vertexSourceId = mandatory(edgeViewModel.getVertexSource().getId());
             Integer vertexTargetId = mandatory(edgeViewModel.getVertexTarget().getId());
+            Boolean isDirectional = mandatory(edgeViewModel.isDirectional());
             String tag = optional(edgeViewModel.getTag(), "");
             String description = optional(edgeViewModel.getDescription(), "");
             Serializable data = optional(edgeViewModel.getData());
@@ -227,6 +231,7 @@ public class ProcessIOConverter {
             result.put(GraphAttributes.TYPE.name(), DefaultAttribute.createAttribute(name));
             result.put(GraphAttributes.NODE_SOURCE.name(), DefaultAttribute.createAttribute(vertexSourceId));
             result.put(GraphAttributes.NODE_TARGET.name(), DefaultAttribute.createAttribute(vertexTargetId));
+            result.put(GraphAttributes.IS_DIRECTIONAL.name(), DefaultAttribute.createAttribute(isDirectional));
             result.put(GraphAttributes.TAG.name(), DefaultAttribute.createAttribute(tag));
 
             result.put(GraphAttributes.DESCRIPTION.name(), DefaultAttribute.createAttribute(description));

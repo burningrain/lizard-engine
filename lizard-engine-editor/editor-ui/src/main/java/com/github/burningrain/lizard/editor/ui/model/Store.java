@@ -1,7 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
-import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
 import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;

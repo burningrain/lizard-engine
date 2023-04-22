@@ -40,7 +40,10 @@ public class LoadPluginDataToStoreAction implements NotRevertAction {
         for (PluginWrapper startedPlugin : startedPlugins) {
             try {
                 List<ProcessElementsExtPoint> elementsExtensions = pluginManager.getExtensions(ProcessElementsExtPoint.class, startedPlugin.getPluginId());
-                processElementsMap.put(startedPlugin.getPluginId(), new ProcessElementsWrapper(startedPlugin.getPluginId(), elementsExtensions));
+                processElementsMap.put(
+                        startedPlugin.getPluginId(),
+                        new ProcessElementsWrapper(startedPlugin.getPluginId(), elementsExtensions)
+                );
                 List<ImportExportExtPoint> ioExtensions = pluginManager.getExtensions(ImportExportExtPoint.class, startedPlugin.getPluginId());
                 extsMap.put(startedPlugin.getPluginId(), ioExtensions);
             } catch (Throwable t) {

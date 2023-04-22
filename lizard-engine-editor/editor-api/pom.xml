@@ -25,6 +25,12 @@
             <version>2.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.burningrain</groupId>
+            <artifactId>gviz-fx</artifactId>
+            <version>1.3</version>
+        </dependency>
+
         <!-- javafx -->
         <dependency>
             <groupId>org.openjfx</groupId>
