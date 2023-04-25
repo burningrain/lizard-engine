@@ -8,10 +8,12 @@ import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.ui.Combo
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
@@ -93,6 +95,18 @@ public class EdgePropertiesInspector implements NodeContainer {
         contextMenu.getItems().addAll(addRowMenuItem);
         predicatesTableView.contextMenuProperty().set(contextMenu);
         // добавление/удаление строк из таблицы предикатов
+
+        predicatesTableView.setMinWidth(TableView.USE_COMPUTED_SIZE);
+        predicatesTableView.setPrefWidth(TableView.USE_COMPUTED_SIZE);
+        predicatesTableView.setMaxWidth(Double.MAX_VALUE);
+
+        predicatesTableView.setMinHeight(TableView.USE_COMPUTED_SIZE);
+        predicatesTableView.setPrefHeight(TableView.USE_COMPUTED_SIZE);
+        predicatesTableView.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(predicatesTableView, Priority.ALWAYS);
+
+        vBox.setPadding(new Insets(4, 4, 4, 4));
+        vBox.setSpacing(4);
 
         vBox.getChildren().addAll(transitionTitle, predicatesTableView);
     }

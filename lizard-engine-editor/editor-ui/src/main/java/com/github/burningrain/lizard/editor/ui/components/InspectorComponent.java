@@ -14,6 +14,7 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -121,6 +122,7 @@ public class InspectorComponent implements UiComponent<Pane> {
         Node node = this.customInspectorController.bind(inspectorModel);
         if (node != null) {
             pane.getChildren().add(node);
+            VBox.setVgrow(node, Priority.ALWAYS);
         }
     }
 

@@ -9,6 +9,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.Serializable;
@@ -51,7 +52,7 @@ public class CustomProcessInspectorController extends CustomInspectorController<
 
     }
 
-    private static class NodeContainerImpl extends AnchorPane implements NodeContainer {
+    private static class NodeContainerImpl implements NodeContainer {
 
         private final Map<String, NodeContainer> nodeMap;
         private final Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders;
@@ -60,16 +61,17 @@ public class CustomProcessInspectorController extends CustomInspectorController<
         public NodeContainerImpl(Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders) {
             this.processPropertyBinders = processPropertyBinders;
 
+            // todo убрать после смены парадигмы на "1 плагин = 1 проект"
             HashMap<String, NodeContainer> nodeMap = new HashMap<>();
             for (Map.Entry<String, ProcessPropertiesInspectorBinder> entry : processPropertyBinders.entrySet()) {
                 NodeContainer propertiesInspector = entry.getValue().createPropertiesInspector();
                 nodeMap.put(entry.getKey(), propertiesInspector);
-                vBox.getChildren().add(propertiesInspector.getNode());
+                Node node = propertiesInspector.getNode();
+                vBox.getChildren().add(node);
                 vBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+                VBox.setVgrow(node, Priority.ALWAYS);
             }
             this.nodeMap = nodeMap;
-
-            this.getChildren().add(vBox);
         }
 
         public void bindInspector(HashMap<String, Serializable> model) {
@@ -88,7 +90,7 @@ public class CustomProcessInspectorController extends CustomInspectorController<
 
         @Override
         public Node getNode() {
-            return this;
+            return vBox;
         }
 
         @Override

@@ -5,10 +5,12 @@ import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.ui.Combo
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
@@ -72,6 +74,18 @@ public class SimpleAnimationProcessInspector implements NodeContainer {
         contextMenu.getItems().addAll(addRowMenuItem);
         variablesTableView.contextMenuProperty().set(contextMenu);
         // добавление/удаление строк из таблицы предикатов
+
+        variablesTableView.setMinWidth(TableView.USE_COMPUTED_SIZE);
+        variablesTableView.setPrefWidth(TableView.USE_COMPUTED_SIZE);
+        variablesTableView.setMaxWidth(Double.MAX_VALUE);
+
+        variablesTableView.setMinHeight(TableView.USE_COMPUTED_SIZE);
+        variablesTableView.setPrefHeight(TableView.USE_COMPUTED_SIZE);
+        variablesTableView.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(variablesTableView, Priority.ALWAYS);
+
+        vBox.setPadding(new Insets(4, 4, 4, 4));
+        vBox.setSpacing(4);
 
         vBox.getChildren().addAll(variablesLabel, variablesTableView);
     }
