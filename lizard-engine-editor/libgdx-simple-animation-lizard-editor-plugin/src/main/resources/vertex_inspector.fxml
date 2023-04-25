@@ -30,7 +30,7 @@
       <Label text="name:" />
       <Label text="from:" GridPane.rowIndex="1" />
       <Label text="to:" GridPane.rowIndex="2" />
-      <Label text="frame frequency:" GridPane.rowIndex="3" />
+      <Label text="frequency:" GridPane.rowIndex="3" />
       <Label text="mode:" GridPane.rowIndex="4" />
       <Label text="looping:" GridPane.rowIndex="5" />
       <ComboBox fx:id="modeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />

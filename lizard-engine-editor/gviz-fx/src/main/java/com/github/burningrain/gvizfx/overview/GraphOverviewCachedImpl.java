@@ -30,7 +30,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 
-public class GraphOverviewCachedImpl extends Pane implements GraphOverview {
+public class GraphOverviewCachedImpl extends AnchorPane implements GraphOverview {
 
     private final Pane canvas = new Pane();
     private final Region rectangle = new Region();
