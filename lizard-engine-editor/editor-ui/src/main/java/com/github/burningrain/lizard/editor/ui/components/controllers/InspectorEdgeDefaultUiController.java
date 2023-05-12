@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import com.github.burningrain.lizard.editor.ui.model.EdgeViewModel;
-import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 
 public class InspectorEdgeDefaultUiController extends DefaultInspectorController<EdgeViewModel> {
+
+    public static final String FXML_PATH = "/fxml/inspector_edge.fxml";
 
     @FXML
     private Label labelType;

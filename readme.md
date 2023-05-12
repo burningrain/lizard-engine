@@ -51,6 +51,8 @@ javafx.graphics/com.sun.javafx.font=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
 --add-exports
+javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
+--add-exports
 javafx.graphics/com.sun.javafx.perf=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
@@ -69,6 +71,8 @@ javafx.graphics/com.sun.prism=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.prism.paint=ALL-UNNAMED
 --add-exports
+javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED
+--add-exports
 javafx.graphics/com.sun.scenario=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.scenario.animation=ALL-UNNAMED
@@ -84,6 +88,10 @@ javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED
 javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
 --add-exports
 javafx.controls/javafx.scene.chart=ALL-UNNAMED
+--add-exports
+javafx.swing/javafx.embed.swing=ALL-UNNAMED
+--add-exports
+javafx.swing/com.sun.javafx.embed.swing=ALL-UNNAMED
 ```
 
 * If you want to use a plugin you should put it in the folder ```plugins``` and restart the application.

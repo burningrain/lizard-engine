@@ -1,6 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.components.controllers;
 
-import com.github.burningrain.lizard.editor.ui.model.LizardModel;
+import com.github.burningrain.lizard.editor.api.project.model.LizardModel;
 import javafx.scene.Node;
 import com.github.burningrain.lizard.editor.ui.components.UiController;
 

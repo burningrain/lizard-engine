@@ -23,6 +23,8 @@ public abstract class FxApplication extends Application {
                         Stream.concat(Arrays.stream(sources()), Arrays.stream(embeddedConfigs)).toArray(Class[]::new)
                 );
 
+        // спринг сам силой ставит безголовый режим для swing. см. org.springframework.boot.SpringApplication#configureHeadlessProperty
+        System.setProperty("java.awt.headless", System.getProperty("java.awt.headless", "false"));
         ConfigurableApplicationContext context;
         if (arguments != null && arguments.length != 0) {
             context = builder.run(arguments);

@@ -8,7 +8,7 @@ import com.github.burningrain.gvizfx.input.InputEventManager;
 import com.github.burningrain.lizard.editor.ui.actions.impl.AddVertexToEditorAction;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
-import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.model.VertexFactoryWrapper;
 import javafx.event.EventHandler;

@@ -2,9 +2,12 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.process
 
 import com.github.br.gdx.simple.animation.io.interpret.TypeEnum;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.ui.ComboBoxTableCell;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.preview.PreviewSingleton;
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -13,13 +16,18 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
 public class SimpleAnimationProcessInspector implements NodeContainer {
 
+    private final Button chooseAtlasButton = new Button("choose atlas");
+    private final Button showPreviewButton = new Button("show preview");
     private final Label variablesLabel = new Label("Variables:");
 
     private TableView<VariableModel> variablesTableView;
@@ -84,10 +92,22 @@ public class SimpleAnimationProcessInspector implements NodeContainer {
         variablesTableView.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(variablesTableView, Priority.ALWAYS);
 
+        chooseAtlasButton.setOnAction(event -> {
+            lizardUiApi.showOpenDialogChooserFile(
+                    "Open texture atlas",
+                    "Texture Atlas",
+                    Collections.singletonList("*.atlas"),
+                    file -> PreviewSingleton.getInstance().loadAtlasTexture(file.getAbsolutePath())
+            );
+        });
+        showPreviewButton.setOnAction(event -> {
+            PreviewSingleton.getInstance().showPreview();
+        });
+        lizardUiApi.addOnCloseRequest(PreviewSingleton.getInstance().getConsumerOnWindowEvent());
+
         vBox.setPadding(new Insets(4, 4, 4, 4));
         vBox.setSpacing(4);
-
-        vBox.getChildren().addAll(variablesLabel, variablesTableView);
+        vBox.getChildren().addAll(chooseAtlasButton, showPreviewButton, variablesLabel, variablesTableView);
     }
 
     @Override

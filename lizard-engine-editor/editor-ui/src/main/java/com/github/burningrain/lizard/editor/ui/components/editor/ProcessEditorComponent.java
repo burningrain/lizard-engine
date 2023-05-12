@@ -3,6 +3,7 @@ package com.github.burningrain.lizard.editor.ui.components.editor;
 import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.model.*;
 import com.github.burningrain.lizard.editor.api.*;
+import com.github.burningrain.lizard.editor.api.project.model.*;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsm;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsmImpl;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.States;
@@ -10,9 +11,8 @@ import com.github.burningrain.lizard.editor.ui.core.UiComponent;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.*;
-import com.github.burningrain.lizard.editor.ui.utils.FxUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.SetChangeListener;
@@ -222,17 +222,17 @@ public class ProcessEditorComponent implements UiComponent<BorderPane> {
         store.currentProjectModelProperty().addListener(observable -> {
             graphViewModel.clear();
             linkListenersToCurrentProcess(graphViewModel);
-            ProjectModel currentProjectModel = store.getCurrentProjectModel();
+            ProjectModelImpl currentProjectModel = store.getCurrentProjectModel();
             //TODO сделать привязку конкретного плагина к конкретному виду фабрики ребер графа
             Optional<ProcessElementsWrapper> optionalFirst = store.getProcessElements().values().stream().findFirst();
             optionalFirst.ifPresent(processElementsWrapper -> {
                 Optional<ProjectLifecycleListener> first = processElementsWrapper.getProjectListeners().values().stream().findFirst();
                 first.ifPresent(projectLifecycleListener -> {
-                    projectLifecycleListener.handleOpenProjectEvent(graphView);
+                    projectLifecycleListener.handleOpenProjectEvent(graphView, currentProjectModel);
                 });
             });
 
-            ProcessViewModel currentProcessViewModel = currentProjectModel.getProcessViewModel();
+            ProcessViewModelImpl currentProcessViewModel = (ProcessViewModelImpl)currentProjectModel.getProcessViewModel();
             currentProcessViewModel.getVertexes().values().forEach((Consumer<VertexViewModel>) vertexViewModel -> {
                 showVertex(graphViewModel, vertexViewModel);
             });

@@ -6,10 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.util.converter.NumberStringConverter;
-import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
-import com.github.burningrain.lizard.editor.ui.model.VertexViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 
 public class InspectorVertexDefaultUiController extends DefaultInspectorController<VertexViewModel> {
+
+    public static final String FXML_PATH = "/fxml/inspector_vertex.fxml";
 
     @FXML
     private Label labelType;

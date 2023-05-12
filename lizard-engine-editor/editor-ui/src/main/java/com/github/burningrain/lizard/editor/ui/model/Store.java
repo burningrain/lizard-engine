@@ -1,7 +1,8 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableMap;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 public class Store {
 
-    private final SimpleObjectProperty<ProjectModel> currentProjectModel = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<ProjectModelImpl> currentProjectModel = new SimpleObjectProperty<>();
 
     private final SimpleMapProperty<String, ProcessElementsWrapper> processElements = new SimpleMapProperty<>();
     private final SimpleMapProperty<String, IOWrapper> ioPoints = new SimpleMapProperty<>();
@@ -29,15 +30,15 @@ public class Store {
         this.processElements.set(processElements);
     }
 
-    public ProjectModel getCurrentProjectModel() {
+    public ProjectModelImpl getCurrentProjectModel() {
         return currentProjectModel.get();
     }
 
-    public SimpleObjectProperty<ProjectModel> currentProjectModelProperty() {
+    public SimpleObjectProperty<ProjectModelImpl> currentProjectModelProperty() {
         return currentProjectModel;
     }
 
-    public void setCurrentProjectModel(ProjectModel currentProcessViewModel) {
+    public void setCurrentProjectModel(ProjectModelImpl currentProcessViewModel) {
         this.currentProjectModel.set(currentProcessViewModel);
     }
 

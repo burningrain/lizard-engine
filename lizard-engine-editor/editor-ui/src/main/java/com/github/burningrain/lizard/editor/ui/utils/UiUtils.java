@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.utils;
 
+import com.github.burningrain.gvizfx.handlers.ActionHandler;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.editor.ui.model.IOWrapper;
 import com.github.burningrain.lizard.editor.ui.model.Store;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.util.Collection;
@@ -21,11 +23,14 @@ import java.util.function.Consumer;
 public class UiUtils {
 
     private Stage primaryStage;
-    private Store store;
+    private final Store store;
+
+    private final ActionHandler<WindowEvent> actionHandler = new ActionHandler<>();
 
     @Deprecated
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        this.primaryStage.setOnCloseRequest(actionHandler);
     }
 
     public UiUtils(Store store) {
@@ -110,6 +115,10 @@ public class UiUtils {
         fileChooser.getExtensionFilters().add(filter);
         fileChooser.setSelectedExtensionFilter(filter);
         return fileChooser;
+    }
+
+    public void addOnCloseRequest(Consumer<? super WindowEvent> onCloseRequest) {
+        actionHandler.addListener(onCloseRequest);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.github.burningrain.lizard.editor.ui.io.descriptor;
+package com.github.burningrain.lizard.editor.api.project.model.descriptor;
 
 import java.io.Serializable;
 import java.util.Collection;

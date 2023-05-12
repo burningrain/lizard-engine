@@ -1,6 +1,9 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
 import com.github.burningrain.lizard.editor.api.EdgeFactory;
+import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.ObservableMap;

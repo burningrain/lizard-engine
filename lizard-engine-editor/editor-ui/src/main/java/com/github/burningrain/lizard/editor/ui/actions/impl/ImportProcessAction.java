@@ -4,8 +4,8 @@ import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.editor.ui.io.ExportImportInnerConverter;
 import com.github.burningrain.lizard.editor.ui.io.ProjectConverter;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
-import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
+import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.utils.FileUtils;
 import com.github.burningrain.lizard.editor.ui.utils.UiUtils;
@@ -73,9 +73,9 @@ public class ImportProcessAction implements NotRevertAction {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        ProcessViewModel processViewModel = exportImportConverter.from(importExportExtPoint.read(pluginApi, file.getName(), bytes));
+        ProcessViewModelImpl processViewModel = exportImportConverter.from(importExportExtPoint.read(pluginApi, file.getName(), bytes));
 
-        store.setCurrentProjectModel(new ProjectModel(projectConverter.createNewDescriptor(processViewModel), processViewModel));
+        store.setCurrentProjectModel(new ProjectModelImpl(projectConverter.createNewDescriptor(processViewModel), processViewModel));
     }
 
 }

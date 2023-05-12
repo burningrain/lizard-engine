@@ -1,7 +1,11 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
+import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModelVisitor;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -20,7 +24,7 @@ public class DeleteCurrentElementFromEditorAction implements RevertAction {
 
     private List<GraphElementViewModel> viewModelList;
 
-    private ProjectModel projectModel;
+    private ProjectModelImpl projectModel;
 
     @Autowired
     private Store store;
@@ -33,7 +37,7 @@ public class DeleteCurrentElementFromEditorAction implements RevertAction {
     @Override
     public void execute() {
         projectModel = store.getCurrentProjectModel();
-        ProcessViewModel processViewModel = projectModel.getProcessViewModel();
+        ProcessViewModelImpl processViewModel = (ProcessViewModelImpl) projectModel.getProcessViewModel();
         this.viewModelList = new ArrayList<>(processViewModel.selectedGraphElementsProperty().get());
         if(viewModelList.isEmpty()) {
             //todo залогировать
@@ -67,7 +71,7 @@ public class DeleteCurrentElementFromEditorAction implements RevertAction {
 
     @Override
     public void revert() {
-        ProcessViewModel processViewModel = projectModel.getProcessViewModel();
+        ProcessViewModelImpl processViewModel = (ProcessViewModelImpl) projectModel.getProcessViewModel();
 
         ArrayList<VertexViewModel> removedVertexes = new ArrayList<>();
         ArrayList<EdgeViewModel> removedEdges = new ArrayList<>();

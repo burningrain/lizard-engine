@@ -1,6 +1,10 @@
 package com.github.burningrain.lizard.editor.ui.io;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -24,8 +28,8 @@ public class ExportImportInnerConverter {
         this.store = store;
     }
 
-    public ProcessViewModel from(ProcessData processData) {
-        ProcessViewModel processViewModel = new ProcessViewModel();
+    public ProcessViewModelImpl from(ProcessData processData) {
+        ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
         processViewModel.setStartVertexId(processData.getStartElementId());
         processViewModel.setProcessName(processData.getTitle());
         processViewModel.setDescription(processData.getDescription());
@@ -102,7 +106,7 @@ public class ExportImportInnerConverter {
                 FXCollections::observableHashMap));
     }
 
-    public ProcessData to(ProcessViewModel processViewModel) {
+    public ProcessData to(ProcessViewModelImpl processViewModel) {
         //todo добавить в процесс дату и айдишник честно прокидывать
         return new ProcessData(
                 processViewModel.getProcessName(),              // String title,

@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.VertexFactory;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.ui.model.defaultmodel.DefaultVertexFactory;
 
 public class VertexFactoryWrapper extends ElementFactoryWrapper<VertexFactory> {

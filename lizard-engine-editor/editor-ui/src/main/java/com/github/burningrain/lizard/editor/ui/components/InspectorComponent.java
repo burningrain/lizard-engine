@@ -3,6 +3,7 @@ package com.github.burningrain.lizard.editor.ui.components;
 import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.overview.GraphOverview;
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
+import com.github.burningrain.lizard.editor.api.project.model.*;
 import com.github.burningrain.lizard.editor.ui.components.controllers.*;
 import com.github.burningrain.lizard.editor.ui.components.controllers.custom.CustomElementInspectorController;
 import com.github.burningrain.lizard.editor.ui.components.controllers.custom.CustomProcessInspectorController;
@@ -39,7 +40,7 @@ public class InspectorComponent implements UiComponent<Pane> {
     private InspectorVertexDefaultUiController vertexDefaultUiController;
     private InspectorEdgeDefaultUiController edgeDefaultUiController;
 
-    private DefaultInspectorController<ProcessViewModel<?, ?>> processController;
+    private DefaultInspectorController<ProcessViewModelImpl<?, ?>> processController;
 
     private DefaultInspectorController defaultInspectorController;
     private UiController customInspectorController;
@@ -77,7 +78,7 @@ public class InspectorComponent implements UiComponent<Pane> {
             ObservableSet<? extends GraphElementViewModel> set = change.getSet();
             if (set.size() == 0) {
                 // элемент не выбран. возврат к основному отображению свойств самого процесса
-                ProcessViewModel processViewModel = store.getCurrentProjectModel().getProcessViewModel();
+                ProcessViewModelImpl processViewModel = (ProcessViewModelImpl)store.getCurrentProjectModel().getProcessViewModel();
                 setInspectorPanel(
                         processController,
                         processViewModel,
@@ -141,9 +142,9 @@ public class InspectorComponent implements UiComponent<Pane> {
             selectedGraphElementsProperty.addListener(selectedGraphElementListener);
         });
 
-        vertexDefaultUiController = createDefaultInspectorController(new InspectorVertexDefaultUiController(), "/fxml/inspector_vertex.fxml");
-        edgeDefaultUiController = createDefaultInspectorController(new InspectorEdgeDefaultUiController(), "/fxml/inspector_edge.fxml");
-        processController = createDefaultInspectorController(new DefaultProcessInspectorController(), "/fxml/editor_header.fxml");
+        vertexDefaultUiController = createDefaultInspectorController(new InspectorVertexDefaultUiController(), InspectorVertexDefaultUiController.FXML_PATH);
+        edgeDefaultUiController = createDefaultInspectorController(new InspectorEdgeDefaultUiController(), InspectorEdgeDefaultUiController.FXML_PATH);
+        processController = createDefaultInspectorController(new DefaultProcessInspectorController(), DefaultProcessInspectorController.FXML_PATH);
     }
 
     private UiController createNewCustomInspector(boolean isProcessCustomController) {

@@ -1,6 +1,9 @@
 package com.github.burningrain.lizard.editor.ui.io;
 
 import com.github.burningrain.lizard.editor.api.ElementDataConverter;
+import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -27,7 +30,7 @@ public class ProcessIOConverter {
         this.store = store;
     }
 
-    public ProcessViewModel importProcess(InputStream inputStream) throws ImportException {
+    public ProcessViewModelImpl importProcess(InputStream inputStream) throws ImportException {
         GraphMLImporterModified<VertexViewModel, EdgeViewModel> importer = new GraphMLImporterModified<>();
         importer.addVertexWithAttributesMapConsumer((viewModel, map) -> {
             String pluginId = mandatory(map.get(GraphAttributes.PLUGIN_ID.name()).getValue());
@@ -93,7 +96,7 @@ public class ProcessIOConverter {
                 () -> new VertexViewModel(), () -> new EdgeViewModel(), false);
         importer.importGraph(graph, inputStream);
 
-        ProcessViewModel processViewModel = new ProcessViewModel();
+        ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
 
         ObservableMap<String, VertexViewModel> vertexes = graph.vertexSet().stream().collect(Collectors.toMap(
                 v -> v.getId() + "", //todo кривота
@@ -124,7 +127,7 @@ public class ProcessIOConverter {
         return processViewModel;
     }
 
-    public byte[] exportProcess(ProcessViewModel currentProcessVM) {
+    public byte[] exportProcess(ProcessViewModelImpl currentProcessVM) {
         DirectedPseudograph<VertexViewModel, EdgeViewModel> graph = new DirectedPseudograph<>(EdgeViewModel.class);
 
         currentProcessVM.getVertexes().values().forEach(o -> {

@@ -11,9 +11,9 @@ import com.github.burningrain.lizard.editor.ui.components.AccordionComponent;
 import com.github.burningrain.lizard.editor.ui.components.InspectorComponent;
 import com.github.burningrain.lizard.editor.ui.components.editor.ProcessEditorComponent;
 import com.github.burningrain.lizard.editor.ui.core.StageManagerImpl;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModel;
-import com.github.burningrain.lizard.editor.ui.io.descriptor.ProjectDescriptor;
-import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
+import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
+import com.github.burningrain.lizard.editor.ui.io.ProjectDescriptorImpl;
+import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 
 import java.util.Map;
@@ -62,11 +62,11 @@ public class Dashboard extends StageManagerImpl {
 
     @Override
     public void afterActivation() {
-        ProcessViewModel processViewModel = new ProcessViewModel();
+        ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
         for (Map.Entry<String, ProcessPropertiesInspectorBinder> entry : store.getProcessPropertyBinders().entrySet()) {
             processViewModel.putDatum(entry.getKey(), entry.getValue().createNewNodeModel());
         }
-        store.setCurrentProjectModel(new ProjectModel(new ProjectDescriptor(), processViewModel));
+        store.setCurrentProjectModel(new ProjectModelImpl(new ProjectDescriptorImpl(), processViewModel));
     }
 
     private Node createCenterNode() {

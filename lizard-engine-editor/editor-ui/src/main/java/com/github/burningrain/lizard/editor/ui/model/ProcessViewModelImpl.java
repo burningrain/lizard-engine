@@ -1,5 +1,7 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
+import com.github.burningrain.lizard.editor.api.project.ProcessViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.*;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
@@ -12,7 +14,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ProcessViewModel<V extends Serializable, E extends Serializable> implements LizardModel<HashMap<String, Serializable>> {
+public class ProcessViewModelImpl<V extends Serializable, E extends Serializable> implements ProcessViewModel  {
 
     private final SimpleStringProperty processName = new SimpleStringProperty();
     private final SimpleStringProperty description = new SimpleStringProperty();

@@ -2,7 +2,7 @@ package com.github.burningrain.lizard.editor.ui.components.editor;
 
 import com.github.burningrain.gvizfx.element.VertexElement;
 import com.github.burningrain.lizard.editor.api.VertexModelBinder;
-import com.github.burningrain.lizard.editor.ui.model.VertexViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import javafx.scene.Node;
 
 import java.io.Serializable;

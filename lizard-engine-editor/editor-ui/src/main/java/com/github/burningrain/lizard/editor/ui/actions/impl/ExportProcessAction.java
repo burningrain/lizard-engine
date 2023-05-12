@@ -3,6 +3,7 @@ package com.github.burningrain.lizard.editor.ui.actions.impl;
 import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
 import com.github.burningrain.lizard.editor.ui.io.ExportImportInnerConverter;
+import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.utils.FileUtils;
 import com.github.burningrain.lizard.editor.ui.utils.UiUtils;
@@ -62,7 +63,7 @@ public class ExportProcessAction implements NotRevertAction {
     private void handle(File file) {
         String extension = FileUtils.getExtensions(file.getName());
         ImportExportExtPoint importExportPoint = uiUtils.chooseImportExportExtPoint(extension);
-        ProcessData processData = exportImportConverter.to(store.getCurrentProjectModel().getProcessViewModel());
+        ProcessData processData = exportImportConverter.to((ProcessViewModelImpl)store.getCurrentProjectModel().getProcessViewModel());
         try {
             Files.write(file.toPath(), importExportPoint.write(pluginApi, processData));
         } catch (IOException e) {

@@ -1,11 +1,13 @@
-package com.github.burningrain.lizard.editor.ui.io.descriptor;
+package com.github.burningrain.lizard.editor.ui.io;
 
-import java.io.Serializable;
+import com.github.burningrain.lizard.editor.api.project.ProjectDescriptor;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public class ProjectDescriptor implements Serializable {
+public class ProjectDescriptorImpl implements ProjectDescriptor {
 
     private String title;
     private String description;

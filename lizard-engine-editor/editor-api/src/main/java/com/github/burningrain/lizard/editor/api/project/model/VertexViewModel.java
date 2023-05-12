@@ -1,7 +1,8 @@
-package com.github.burningrain.lizard.editor.ui.model;
+package com.github.burningrain.lizard.editor.api.project.model;
 
+import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModelVisitor;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

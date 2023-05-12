@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.EditorElementFactory;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 
 public abstract class ElementFactoryWrapper<F extends EditorElementFactory> {
 

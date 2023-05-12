@@ -1,4 +1,4 @@
-package com.github.burningrain.lizard.editor.ui.model;
+package com.github.burningrain.lizard.editor.api.project.model;
 
 import java.io.Serializable;
 

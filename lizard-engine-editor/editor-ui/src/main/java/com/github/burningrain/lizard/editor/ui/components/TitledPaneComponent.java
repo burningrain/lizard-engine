@@ -1,7 +1,7 @@
 package com.github.burningrain.lizard.editor.ui.components;
 
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
-import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.ui.model.VertexFactoryWrapper;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;

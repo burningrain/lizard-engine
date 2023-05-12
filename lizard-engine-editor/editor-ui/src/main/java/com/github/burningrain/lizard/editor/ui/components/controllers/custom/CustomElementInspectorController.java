@@ -3,6 +3,7 @@ package com.github.burningrain.lizard.editor.ui.components.controllers.custom;
 import com.github.burningrain.lizard.editor.api.EditorElementFactory;
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.model.*;
 import com.github.burningrain.lizard.editor.ui.model.*;
 
 import java.io.Serializable;

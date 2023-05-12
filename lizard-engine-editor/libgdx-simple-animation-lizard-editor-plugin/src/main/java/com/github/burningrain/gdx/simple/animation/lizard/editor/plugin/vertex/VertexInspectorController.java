@@ -12,6 +12,8 @@ import javafx.util.converter.NumberStringConverter;
 
 public class VertexInspectorController {
 
+    public static final String PATH = "/vertex_inspector.fxml";
+
     @FXML
     private TextField nameTextField;
 

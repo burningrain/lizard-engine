@@ -4,7 +4,7 @@ import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
 import com.github.burningrain.lizard.editor.ui.components.UiController;
-import com.github.burningrain.lizard.editor.ui.model.LizardModel;
+import com.github.burningrain.lizard.editor.api.project.model.LizardModel;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import javafx.scene.Node;
 

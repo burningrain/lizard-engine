@@ -3,7 +3,7 @@ package com.github.burningrain.lizard.editor.ui.actions.impl;
 import com.github.burningrain.lizard.editor.ui.actions.Actions;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.model.VertexFactoryWrapper;
-import com.github.burningrain.lizard.editor.ui.model.VertexViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.VertexViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -2,12 +2,11 @@ package com.github.burningrain.lizard.editor.ui.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
-import com.github.burningrain.lizard.editor.ui.io.descriptor.ElementType;
-import com.github.burningrain.lizard.editor.ui.io.descriptor.PluginDependency;
-import com.github.burningrain.lizard.editor.ui.io.descriptor.PluginDescriptor;
-import com.github.burningrain.lizard.editor.ui.io.descriptor.ProjectDescriptor;
-import com.github.burningrain.lizard.editor.ui.model.ProcessElementType;
-import com.github.burningrain.lizard.editor.ui.model.ProcessViewModel;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.ElementType;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDependency;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import org.jgrapht.nio.ImportException;
 import org.pf4j.PluginManager;
@@ -42,13 +41,13 @@ public class ProjectConverter {
         this.ioObjectMapper = new ObjectMapper();
     }
 
-    public ProjectModel importProject(File file) throws ImportException, IOException {
+    public ProjectModelImpl importProject(File file) throws ImportException, IOException {
         ZipFile zipFile = new ZipFile(file);
         ZipEntry entryDescription = zipFile.getEntry(DESCRIPTOR_JSON);
         ZipEntry entryProcess = zipFile.getEntry(PROCESS_GRAPHML);
 
-        ProjectDescriptor descriptor = this.ioObjectMapper.readValue(zipFile.getInputStream(entryDescription), ProjectDescriptor.class);
-        ProcessViewModel processViewModel = processIOConverter.importProcess(zipFile.getInputStream(entryProcess));
+        ProjectDescriptorImpl descriptor = this.ioObjectMapper.readValue(zipFile.getInputStream(entryDescription), ProjectDescriptorImpl.class);
+        ProcessViewModelImpl processViewModel = processIOConverter.importProcess(zipFile.getInputStream(entryProcess));
         processViewModel.setProcessName(descriptor.getTitle());
         processViewModel.setDescription(descriptor.getDescription());
 
@@ -59,31 +58,31 @@ public class ProjectConverter {
                             .getElementDataConverter(), pluginProcessData));
         });
 
-        return new ProjectModel(descriptor, processViewModel);
+        return new ProjectModelImpl(descriptor, processViewModel);
     }
 
-    public void saveProject(String path, ProjectModel projectModel) throws IOException {
+    public void saveProject(String path, ProjectModelImpl projectModel) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(path);
              ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)
         ) {
             zipOutputStream.putNextEntry(new ZipEntry(DESCRIPTOR_JSON));
             zipOutputStream.write(this.ioObjectMapper.writeValueAsBytes(createNewDescriptor(projectModel)));
             zipOutputStream.putNextEntry(new ZipEntry(PROCESS_GRAPHML));
-            zipOutputStream.write(processIOConverter.exportProcess(projectModel.getProcessViewModel()));
+            zipOutputStream.write(processIOConverter.exportProcess((ProcessViewModelImpl)projectModel.getProcessViewModel()));
         }
     }
 
-    public ProjectDescriptor createNewDescriptor(ProcessViewModel processViewModel) {
+    public ProjectDescriptorImpl createNewDescriptor(ProcessViewModelImpl processViewModel) {
         return createNewDescriptor(null, processViewModel);
     }
 
-    private ProjectDescriptor createNewDescriptor(ProjectModel projectModel) {
-        ProcessViewModel processViewModel = projectModel.getProcessViewModel();
+    private ProjectDescriptorImpl createNewDescriptor(ProjectModelImpl projectModel) {
+        ProcessViewModelImpl processViewModel = (ProcessViewModelImpl)projectModel.getProcessViewModel();
         return createNewDescriptor(projectModel, processViewModel);
     }
 
-    private ProjectDescriptor createNewDescriptor(ProjectModel projectModel, ProcessViewModel processViewModel) {
-        ProjectDescriptor newDescriptor = new ProjectDescriptor();
+    private ProjectDescriptorImpl createNewDescriptor(ProjectModelImpl projectModel, ProcessViewModelImpl processViewModel) {
+        ProjectDescriptorImpl newDescriptor = new ProjectDescriptorImpl();
         newDescriptor.setTitle(processViewModel.getProcessName());
         newDescriptor.setDescription(processViewModel.getDescription());
         newDescriptor.setAuthor(System.getProperty("user.name"));
@@ -95,7 +94,7 @@ public class ProjectConverter {
     }
 
     private Map<String, String> createPluginsProcessData() {
-        HashMap<String, Serializable> data = store.getCurrentProjectModel().getProcessViewModel().getData();
+        HashMap<String, Serializable> data = (HashMap<String, Serializable>) store.getCurrentProjectModel().getProcessViewModel().getData();
         Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
         return data.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -133,7 +132,7 @@ public class ProjectConverter {
         return result;
     }
 
-    private List<PluginDescriptor> createPluginDescriptorsList(ProjectModel projectModel) {
+    private List<PluginDescriptor> createPluginDescriptorsList(ProjectModelImpl projectModel) {
         Map<String, PluginDescriptor> oldPluginDescriptors = projectModel == null ?
                 Collections.emptyMap() : projectModel
                 .getDescriptor()
