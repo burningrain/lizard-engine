@@ -6,8 +6,6 @@ import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.i
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
 import com.github.burningrain.lizard.editor.api.NodeContainer;
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -16,11 +14,9 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -101,13 +97,19 @@ public class SimpleAnimationProcessInspector implements NodeContainer {
             );
         });
         showPreviewButton.setOnAction(event -> {
-            PreviewSingleton.getInstance().showPreview();
+            PreviewSingleton.getInstance().showPreview(lizardUiApi.getStageX(), lizardUiApi.getStageY());
         });
         lizardUiApi.addOnCloseRequest(PreviewSingleton.getInstance().getConsumerOnWindowEvent());
 
         vBox.setPadding(new Insets(4, 4, 4, 4));
         vBox.setSpacing(4);
-        vBox.getChildren().addAll(chooseAtlasButton, showPreviewButton, variablesLabel, variablesTableView);
+
+        ButtonBar buttonBar = new ButtonBar();
+        buttonBar.getButtons().addAll(chooseAtlasButton, showPreviewButton);
+        ButtonBar.setButtonData(chooseAtlasButton, ButtonBar.ButtonData.LEFT);
+        ButtonBar.setButtonData(showPreviewButton, ButtonBar.ButtonData.RIGHT);
+
+        vBox.getChildren().addAll(buttonBar, variablesLabel, variablesTableView);
     }
 
     @Override

@@ -23,4 +23,8 @@ public interface LizardUiApi {
 
     void showSaveDialogChooserFile(String title, String desc, List<String> exts, Consumer<File> consumer);
 
+    double getStageX();
+
+    double getStageY();
+
 }

@@ -1,18 +1,24 @@
 package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.preview;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.SimpleAnimationVertexModel;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.WindowEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.util.function.Consumer;
 
 public final class PreviewSingleton {
 
     private static volatile PreviewSingleton instance;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreviewSingleton.class);
 
     public static PreviewSingleton getInstance() {
         if (instance == null) {
@@ -35,15 +41,22 @@ public final class PreviewSingleton {
         @Override
         public void accept(WindowEvent windowEvent) {
             if (WindowEvent.WINDOW_CLOSE_REQUEST == windowEvent.getEventType()) {
-                libGdxPreview.dispose();
-                //frame.dispatchEvent(new java.awt.event.WindowEvent(frame, java.awt.event.WindowEvent.WINDOW_CLOSING));
-                frame.dispose();
+                SwingUtilities.invokeLater(() -> {
+                    frame.dispose();
+
+                    try {
+                        Gdx.app.exit();
+                    } catch (Exception e) {
+                        // java.lang.IllegalArgumentException: buffer not allocated with newUnsafeByteBuffer or already disposed
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                });
                 isActive = false;
             }
         }
     };
 
-    public void showPreview() {
+    public void showPreview(double x, double y) {
         if (isActive) {
             return;
         }
@@ -77,6 +90,9 @@ public final class PreviewSingleton {
                     isActive = false;
                 }
             });
+
+            frame.setLocation((int) x, (int) y);
+            frame.setAlwaysOnTop(true);
         });
     }
 

@@ -56,4 +56,14 @@ public class LizardUiApiImpl implements LizardUiApi {
         uiUtils.showSaveDialogChooserFile(title, desc, exts, consumer);
     }
 
+    @Override
+    public double getStageX() {
+        return uiUtils.getStageX();
+    }
+
+    @Override
+    public double getStageY() {
+        return uiUtils.getStageY();
+    }
+
 }

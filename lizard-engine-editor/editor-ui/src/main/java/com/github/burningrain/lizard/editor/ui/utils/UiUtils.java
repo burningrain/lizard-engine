@@ -121,4 +121,12 @@ public class UiUtils {
         actionHandler.addListener(onCloseRequest);
     }
 
+    public double getStageX() {
+        return primaryStage.getX();
+    }
+
+    public double getStageY() {
+        return primaryStage.getY();
+    }
+
 }
