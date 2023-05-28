@@ -62,8 +62,10 @@ public class VertexInspectorController {
         Bindings.unbindBidirectional(frameFrequencyTextField.textProperty(), model.frameFrequencyProperty());
         loopingCheckbox.selectedProperty().unbindBidirectional(model.loopingProperty());
         // mode
-        modeComboBox.getSelectionModel().selectedItemProperty().removeListener(selectedItemListener);
-        selectedItemListener = null;
+        if(selectedItemListener != null) {
+            modeComboBox.getSelectionModel().selectedItemProperty().removeListener(selectedItemListener);
+            selectedItemListener = null;
+        }
     }
 
 }
