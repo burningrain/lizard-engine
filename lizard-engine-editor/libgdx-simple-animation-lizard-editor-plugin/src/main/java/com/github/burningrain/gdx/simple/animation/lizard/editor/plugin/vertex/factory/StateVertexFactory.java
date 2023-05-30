@@ -2,6 +2,7 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.
 
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.*;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.AnimationStateVertexInspector;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.AnimationStateVertexVertexInspectorImpl;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.ui.AnimationUI;
 import com.github.burningrain.lizard.editor.api.ElementDataConverter;
 import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;

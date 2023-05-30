@@ -2,6 +2,7 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin;
 
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.edge.SimpleAnimationEdgeFactory;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.process.ProcessPropertiesInspectorBinderImpl;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.AnyStateVertexPropertiesInspectorBinder;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.VertexElementDataConverterImpl;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.VertexPropertiesInspectorBinder;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.binder.VertexModelBinderImpl;
@@ -35,9 +36,10 @@ public class ProcessElementsExtPointImpl implements ProcessElementsExtPoint {
     public List<VertexFactory> getVertexFactoriesList() {
         VertexElementDataConverterImpl dataConverter = new VertexElementDataConverterImpl();
         VertexPropertiesInspectorBinder inspectorBinder = new VertexPropertiesInspectorBinder();
+        AnyStateVertexPropertiesInspectorBinder anyStateBinder = new AnyStateVertexPropertiesInspectorBinder();
 
         return Arrays.asList(
-                new AnyStateVertexFactory(dataConverter, new VertexModelBinderImpl<>(AnyStateUI.class, AnyStateUI::new), inspectorBinder),
+                new AnyStateVertexFactory(dataConverter, new VertexModelBinderImpl<>(AnyStateUI.class, AnyStateUI::new), anyStateBinder),
                 new StartStateVertexFactory(dataConverter, new VertexModelBinderImpl<>(StartStateUI.class, StartStateUI::new), inspectorBinder),
                 new IntermediateEndStateVertexFactory(dataConverter, new VertexModelBinderImpl<>(IntermediateStateUI.class, IntermediateStateUI::new), inspectorBinder),
                 new EndStateVertexFactory(dataConverter, new VertexModelBinderImpl<>(EndStateUI.class, EndStateUI::new), inspectorBinder)

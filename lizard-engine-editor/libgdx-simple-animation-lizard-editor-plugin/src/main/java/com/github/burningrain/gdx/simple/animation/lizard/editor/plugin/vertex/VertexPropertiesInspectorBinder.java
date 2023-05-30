@@ -1,6 +1,7 @@
 package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex;
 
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.AnimationStateVertexInspector;
+import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.AnimationStateVertexVertexInspectorImpl;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.preview.PreviewSingleton;
 import com.github.burningrain.lizard.editor.api.PropertiesInspectorBinder;
 
@@ -20,7 +21,7 @@ public class VertexPropertiesInspectorBinder implements PropertiesInspectorBinde
 
     @Override
     public AnimationStateVertexInspector createPropertiesInspector() {
-        return new AnimationStateVertexInspector();
+        return new AnimationStateVertexVertexInspectorImpl();
     }
 
 }
