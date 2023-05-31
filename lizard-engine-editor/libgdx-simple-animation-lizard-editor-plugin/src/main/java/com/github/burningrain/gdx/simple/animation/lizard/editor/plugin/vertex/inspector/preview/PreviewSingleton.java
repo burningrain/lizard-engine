@@ -2,6 +2,7 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
+import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.SimpleAnimationVertexModel;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
+
 import java.awt.event.WindowAdapter;
 import java.util.function.Consumer;
 
@@ -19,6 +20,9 @@ public final class PreviewSingleton {
     private static volatile PreviewSingleton instance;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreviewSingleton.class);
+
+    private static final int FRAME_WIDTH = 300;
+    private static final int FRAME_HEIGHT = 300;
 
     public static PreviewSingleton getInstance() {
         if (instance == null) {
@@ -72,16 +76,16 @@ public final class PreviewSingleton {
             libGdxPreview = new PreviewGdxApplicationListener();
             libGdxPreview.setAtlasTexture(pathToAtlas);
 
-            LwjglAWTCanvas canvas = new LwjglAWTCanvas(libGdxPreview);
+            LwjglCanvas canvas = new LwjglCanvas(libGdxPreview);
             canvas.getCanvas().setVisible(true);
-            canvas.getCanvas().setSize(300, 300);
+            //canvas.getCanvas().setSize(FRAME_WIDTH, FRAME_HEIGHT);
 
             // using SwingNode does not work.
             frame = new JFrame();
             frame.getContentPane().add(canvas.getCanvas());
             frame.pack();
             frame.setVisible(true);
-            frame.setSize(300, 300);
+            frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 
             frame.addWindowListener(new WindowAdapter() {
                 @Override

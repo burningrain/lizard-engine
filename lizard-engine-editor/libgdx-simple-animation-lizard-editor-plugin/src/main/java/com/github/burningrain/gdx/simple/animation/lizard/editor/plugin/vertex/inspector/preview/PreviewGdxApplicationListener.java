@@ -2,15 +2,20 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.SimpleAnimationVertexModel;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -46,22 +51,47 @@ public class PreviewGdxApplicationListener implements ApplicationListener {
         }
     };
 
+    private Camera camera;
+    private Viewport viewport;
+
+    private float scale = 1;
+
     @Override
     public void create() {
         resolver = new AbsoluteFileHandleResolver();
         assetManager = new AssetManager(resolver);
 
-        batch = new SpriteBatch();
+        camera = new OrthographicCamera(
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()
+        );
+        viewport = new FitViewport(300, 300, camera);
+        viewport.apply(true);
+        camera.update();
+
+        batch = new SpriteBatch(10);
 
         assetManager.setLoader(TextureAtlas.class, new TextureAtlasLoader(resolver));
         assetManager.load(pathToAtlas, TextureAtlas.class);
         assetManager.finishLoading();
         this.textureAtlas = assetManager.get(pathToAtlas, TextureAtlas.class);
+
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                scale -= amountY / 10f;
+                if(scale < 0) {
+                    scale = 0;
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
     public void resize(int width, int height) {
-        ViewHelper.viewport.update(width, height);
+        viewport.update(width, height);
     }
 
     @Override
@@ -77,13 +107,20 @@ public class PreviewGdxApplicationListener implements ApplicationListener {
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, looping);
 
 
-        batch.setProjectionMatrix(ViewHelper.camera.projection);
-        batch.setTransformMatrix(ViewHelper.camera.view);
+        batch.setProjectionMatrix(camera.projection);
+        batch.setTransformMatrix(camera.view);
         batch.begin();
 
-        batch.draw(currentFrame, ViewHelper.WORLD_WIDTH / 2, 0); // Draw current frame at (0, 0)
+        batch.draw(
+                currentFrame,
+                (viewport.getWorldWidth() - currentFrame.getRegionWidth() * scale) / 2f,
+                (viewport.getWorldHeight() - currentFrame.getRegionHeight() * scale) / 2f,
+                currentFrame.getRegionWidth() * scale,
+                currentFrame.getRegionHeight() * scale
+        );
 
         batch.end();
+        camera.update();
     }
 
     @Override
