@@ -25,7 +25,7 @@ public class DefaultEdgeFactory implements EdgeFactory<DefaultGraphElementModel,
 
     @Override
     public EdgeModelBinder<DefaultGraphElementModel, DefaultGraphElementNode> getElementModelBinder() {
-        return DefaultElementFactory.createModelBinder();
+        return DefaultElementFactory.createModelBinder(new DefaultEdgeElementModelBinder());
     }
 
     @Override

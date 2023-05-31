@@ -8,11 +8,9 @@ import com.github.burningrain.lizard.editor.api.VertexModelBinder;
 
 public class DefaultVertexFactory implements VertexFactory<DefaultGraphElementModel, DefaultGraphElementNode, DefaultInspectorPaneController> {
 
-    private PropertiesInspectorBinder<DefaultGraphElementModel, DefaultInspectorPaneController> defaultPropertiesBinder = DefaultElementFactory.createInspector();
-
-    private VertexModelBinder<DefaultGraphElementModel, DefaultGraphElementNode> defaultElementModelBinder = DefaultElementFactory.createModelBinder();
-
-    private ElementDataConverter<DefaultGraphElementModel> defaultDataConverter = DefaultElementFactory.createDataConverter();
+    private final PropertiesInspectorBinder<DefaultGraphElementModel, DefaultInspectorPaneController> defaultPropertiesBinder = DefaultElementFactory.createInspector();
+    private final VertexModelBinder<DefaultGraphElementModel, DefaultGraphElementNode> defaultElementModelBinder = DefaultElementFactory.createModelBinder(new DefaultVertexElementModelBinder());
+    private final ElementDataConverter<DefaultGraphElementModel> defaultDataConverter = DefaultElementFactory.createDataConverter();
 
     @Override
     public String getTitle() {

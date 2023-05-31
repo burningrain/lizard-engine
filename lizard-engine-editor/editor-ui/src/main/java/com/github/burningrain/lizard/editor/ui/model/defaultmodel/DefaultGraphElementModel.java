@@ -11,8 +11,8 @@ import java.util.HashSet;
 
 public class DefaultGraphElementModel implements Serializable {
 
-    private SimpleMapProperty<String, String> properties = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    private SimpleSetProperty<String> showPropertiesSet = new SimpleSetProperty<>(FXCollections.observableSet(new HashSet<>()));
+    private final SimpleMapProperty<String, String> properties = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final SimpleSetProperty<String> showPropertiesSet = new SimpleSetProperty<>(FXCollections.observableSet(new HashSet<>()));
 
     public ObservableMap<String, String> getProperties() {
         return properties.get();

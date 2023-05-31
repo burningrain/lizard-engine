@@ -2,12 +2,14 @@ package com.github.burningrain.lizard.editor.ui.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.ElementType;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDependency;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
-import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
+import com.github.burningrain.lizard.editor.ui.model.ProcessElementsWrapper;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
+import com.github.burningrain.lizard.editor.ui.model.defaultmodel.DefaultProcessElementsExtPoint;
 import org.jgrapht.nio.ImportException;
 import org.pf4j.PluginManager;
 
@@ -53,9 +55,17 @@ public class ProjectConverter {
 
         Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
         descriptor.getPluginsProcessData().forEach((pluginId, pluginProcessData) -> {
+            ProcessPropertiesInspectorBinder inspectorBinder = processPropertyBinders.get(pluginId);
+            if(inspectorBinder == null) {
+                store.processElementsProperty().put(
+                        pluginId,
+                        new ProcessElementsWrapper(pluginId, Collections.singletonList(new DefaultProcessElementsExtPoint()))
+                );
+                inspectorBinder = store.getProcessPropertyBinders().get(pluginId);
+            }
             processViewModel.putDatum(pluginId,
-                    ObjectMapperUtils.createDataFromString(processPropertyBinders.get(pluginId)
-                            .getElementDataConverter(), pluginProcessData));
+                    ObjectMapperUtils.createDataFromString(
+                            inspectorBinder.getElementDataConverter(), pluginProcessData));
         });
 
         return new ProjectModelImpl(descriptor, processViewModel);

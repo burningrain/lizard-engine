@@ -1,29 +1,16 @@
 package com.github.burningrain.lizard.editor.ui.model.defaultmodel;
 
+import com.github.burningrain.lizard.editor.api.ElementModelBinder;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import com.github.burningrain.lizard.editor.api.EdgeModelBinder;
-import com.github.burningrain.lizard.editor.api.VertexModelBinder;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class DefaultElementModelBinder implements
-        VertexModelBinder<DefaultGraphElementModel, DefaultGraphElementNode>,
-        EdgeModelBinder<DefaultGraphElementModel, DefaultGraphElementNode> {
+public abstract class DefaultElementModelBinder<N extends DefaultGraphElementNode> implements ElementModelBinder<DefaultGraphElementModel, N> {
 
 
     private SetChangeListener<String> showPropertiesListener;
-
-    @Override
-    public DefaultGraphElementNode createNode() {
-        return new DefaultGraphElementNode();
-    }
-
-    @Override
-    public Class<DefaultGraphElementNode> getNodeClass() {
-        return DefaultGraphElementNode.class;
-    }
 
     @Override
     public void bindNodeToModel(DefaultGraphElementNode node, DefaultGraphElementModel model) {

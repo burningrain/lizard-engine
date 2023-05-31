@@ -10,8 +10,8 @@ public interface DefaultElementFactory {
         return new DefaultPropertiesInspectorBinder();
     }
 
-    static <T extends ElementModelBinder<DefaultGraphElementModel, DefaultGraphElementNode>> T createModelBinder() {
-        return (T)new DefaultElementModelBinder();
+    static <T extends DefaultElementModelBinder<DefaultGraphElementNode>> T createModelBinder(T modelBuilder) {
+        return modelBuilder;
     }
 
     static ElementDataConverter<DefaultGraphElementModel> createDataConverter() {
