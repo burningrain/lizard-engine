@@ -1,7 +1,6 @@
 package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.inspector.preview;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.vertex.SimpleAnimationVertexModel;
 import javafx.scene.control.Alert;
@@ -41,12 +40,18 @@ public final class PreviewSingleton {
     private PreviewGdxApplicationListener libGdxPreview;
     private JFrame frame;
 
-    private Consumer<? super WindowEvent> consumer = new Consumer<WindowEvent>() {
+    private final Consumer<? super WindowEvent> consumer = new Consumer<WindowEvent>() {
         @Override
         public void accept(WindowEvent windowEvent) {
             if (WindowEvent.WINDOW_CLOSE_REQUEST == windowEvent.getEventType()) {
+                if(!isActive) {
+                    return;
+                }
+
                 SwingUtilities.invokeLater(() -> {
-                    frame.dispose();
+                    if(frame != null) {
+                        frame.dispose();
+                    }
 
                     try {
                         Gdx.app.exit();

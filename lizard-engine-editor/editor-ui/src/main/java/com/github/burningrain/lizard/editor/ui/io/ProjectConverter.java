@@ -2,6 +2,8 @@ package com.github.burningrain.lizard.editor.ui.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.ProcessViewModel;
+import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.ElementType;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDependency;
@@ -12,6 +14,7 @@ import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.model.defaultmodel.DefaultProcessElementsExtPoint;
 import org.jgrapht.nio.ImportException;
 import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,7 +59,7 @@ public class ProjectConverter {
         Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
         descriptor.getPluginsProcessData().forEach((pluginId, pluginProcessData) -> {
             ProcessPropertiesInspectorBinder inspectorBinder = processPropertyBinders.get(pluginId);
-            if(inspectorBinder == null) {
+            if (inspectorBinder == null) {
                 store.processElementsProperty().put(
                         pluginId,
                         new ProcessElementsWrapper(pluginId, Collections.singletonList(new DefaultProcessElementsExtPoint()))
@@ -71,40 +74,53 @@ public class ProjectConverter {
         return new ProjectModelImpl(descriptor, processViewModel);
     }
 
-    public void saveProject(String path, ProjectModelImpl projectModel) throws IOException {
+    public void saveProject(String path, ProjectModel projectModel) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(path);
              ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)
         ) {
             zipOutputStream.putNextEntry(new ZipEntry(DESCRIPTOR_JSON));
             zipOutputStream.write(this.ioObjectMapper.writeValueAsBytes(createNewDescriptor(projectModel)));
             zipOutputStream.putNextEntry(new ZipEntry(PROCESS_GRAPHML));
-            zipOutputStream.write(processIOConverter.exportProcess((ProcessViewModelImpl)projectModel.getProcessViewModel()));
+            zipOutputStream.write(processIOConverter.exportProcess((ProcessViewModelImpl) projectModel.getProcessViewModel()));
         }
     }
 
-    public ProjectDescriptorImpl createNewDescriptor(ProcessViewModelImpl processViewModel) {
-        return createNewDescriptor(null, processViewModel);
+    public ProjectDescriptorImpl createNewDescriptor(ProcessViewModel processViewModel) {
+        return createNewDescriptor(processViewModel.getProcessName(), processViewModel.getDescription(), null);
     }
 
-    private ProjectDescriptorImpl createNewDescriptor(ProjectModelImpl projectModel) {
-        ProcessViewModelImpl processViewModel = (ProcessViewModelImpl)projectModel.getProcessViewModel();
-        return createNewDescriptor(projectModel, processViewModel);
+    private ProjectDescriptorImpl createNewDescriptor(ProjectModel projectModel) {
+        Set<String> pluginIds = projectModel.getDescriptor().getPluginDescriptors()
+                .stream()
+                .map(PluginDescriptor::getPluginId)
+                .collect(Collectors.toSet());
+        ProcessViewModel processViewModel = projectModel.getProcessViewModel();
+        return createNewDescriptor(
+                processViewModel.getProcessName(),
+                processViewModel.getDescription(),
+                createPluginDescriptorsList(pluginIds, projectModel)
+        );
     }
 
-    private ProjectDescriptorImpl createNewDescriptor(ProjectModelImpl projectModel, ProcessViewModelImpl processViewModel) {
+    public ProjectDescriptorImpl createNewDescriptor(String title, String description, Collection<PluginDescriptor> pluginDescriptors) {
         ProjectDescriptorImpl newDescriptor = new ProjectDescriptorImpl();
-        newDescriptor.setTitle(processViewModel.getProcessName());
-        newDescriptor.setDescription(processViewModel.getDescription());
+        newDescriptor.setTitle(title);
+        newDescriptor.setDescription(description);
         newDescriptor.setAuthor(System.getProperty("user.name"));
         newDescriptor.setDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX").format(new Date()));
         newDescriptor.setPluginsProcessData(createPluginsProcessData());
-        newDescriptor.setPluginDescriptors(createPluginDescriptorsList(projectModel));
+        newDescriptor.setPluginDescriptors(pluginDescriptors);
 
         return newDescriptor;
     }
 
     private Map<String, String> createPluginsProcessData() {
-        HashMap<String, Serializable> data = (HashMap<String, Serializable>) store.getCurrentProjectModel().getProcessViewModel().getData();
+        ProjectModel currentProjectModel = store.getCurrentProjectModel();
+        if(currentProjectModel == null) {
+            return Collections.emptyMap();
+        }
+
+        HashMap<String, Serializable> data = (HashMap<String, Serializable>) currentProjectModel.getProcessViewModel().getData();
         Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
         return data.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -115,9 +131,9 @@ public class ProjectConverter {
         ));
     }
 
-    private Map<String, Collection<ElementType>> createElementTypes() {
+    private Map<String, Collection<ElementType>> createElementTypes(Collection<ProcessElementsWrapper> processElementsWrappers) {
         LinkedHashSet<ElementType> elements = new LinkedHashSet<>();
-        store.getProcessElements().values().forEach(processElementsWrapper -> {
+        processElementsWrappers.forEach(processElementsWrapper -> {
             elements.addAll(
                     processElementsWrapper.getVertexFactories().values().stream().map(vertexFactoryWrapper -> {
                         ProcessElementType type = vertexFactoryWrapper.getType();
@@ -134,34 +150,37 @@ public class ProjectConverter {
 
         HashMap<String, Collection<ElementType>> result = new HashMap<>();
         elements.forEach(elementType -> {
-            Collection<ElementType> elementTypes =
-                    result.computeIfAbsent(elementType.getPluginId(), k -> new LinkedHashSet<>());
+            Collection<ElementType> elementTypes = result.computeIfAbsent(elementType.getPluginId(), k -> new LinkedHashSet<>());
             elementTypes.add(elementType);
         });
 
         return result;
     }
 
-    private List<PluginDescriptor> createPluginDescriptorsList(ProjectModelImpl projectModel) {
+    public List<PluginDescriptor> createPluginDescriptorsList(Set<String> pluginIdsSet, ProjectModel projectModel) {
         Map<String, PluginDescriptor> oldPluginDescriptors = projectModel == null ?
                 Collections.emptyMap() : projectModel
                 .getDescriptor()
                 .getPluginDescriptors()
                 .stream()
                 .collect(Collectors.toMap(
-                        pluginDescriptor -> pluginDescriptor.getPluginId(),
+                        PluginDescriptor::getPluginId,
                         pluginDescriptor -> pluginDescriptor
                 ));
         Map<String, org.pf4j.PluginDescriptor> actualPluginDescriptors = pluginManager.getStartedPlugins().stream()
+                .filter(wrapper -> pluginIdsSet.contains(wrapper.getPluginId()))
                 .collect(
                         Collectors.toMap(
-                                pluginWrapper -> pluginWrapper.getPluginId(),
-                                pluginWrapper -> pluginWrapper.getDescriptor())
+                                PluginWrapper::getPluginId,
+                                PluginWrapper::getDescriptor)
                 );
 
+        Collection<ProcessElementsWrapper> processElementsWrappers = pluginIdsSet
+                .stream()
+                .map(pluginId -> store.getProcessElements().get(pluginId))
+                .toList();
+        Map<String, Collection<ElementType>> elementTypes = createElementTypes(processElementsWrappers);
 
-        Map<String, Collection<ElementType>> elementTypes = createElementTypes();
-        Set<String> pluginIdsSet = store.getProcessElements().keySet();
         ArrayList<PluginDescriptor> pluginDescriptorsResult = new ArrayList<>();
         pluginIdsSet.forEach(pluginId -> {
             //todo вот здесь подумать над сравнением версией и какую модель версионирования брать

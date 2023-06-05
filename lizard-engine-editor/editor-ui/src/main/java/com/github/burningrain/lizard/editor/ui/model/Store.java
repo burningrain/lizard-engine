@@ -1,19 +1,19 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableMap;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Store {
 
-    private final SimpleObjectProperty<ProjectModelImpl> currentProjectModel = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<ProjectModel> currentProjectModel = new SimpleObjectProperty<>();
 
     private final SimpleMapProperty<String, ProcessElementsWrapper> processElements = new SimpleMapProperty<>();
     private final SimpleMapProperty<String, IOWrapper> ioPoints = new SimpleMapProperty<>();
@@ -30,20 +30,35 @@ public class Store {
         this.processElements.set(processElements);
     }
 
-    public ProjectModelImpl getCurrentProjectModel() {
+    public ProjectModel getCurrentProjectModel() {
         return currentProjectModel.get();
     }
 
-    public SimpleObjectProperty<ProjectModelImpl> currentProjectModelProperty() {
+    public Set<String> getCurrentProjectPluginIds() {
+        return currentProjectModel.get().getDescriptor().getPluginDescriptors()
+                .stream()
+                .map(PluginDescriptor::getPluginId)
+                .collect(Collectors.toSet());
+    }
+
+    public SimpleObjectProperty<ProjectModel> currentProjectModelProperty() {
         return currentProjectModel;
     }
 
-    public void setCurrentProjectModel(ProjectModelImpl currentProcessViewModel) {
+    public void setCurrentProjectModel(ProjectModel currentProcessViewModel) {
         this.currentProjectModel.set(currentProcessViewModel);
     }
 
     public ObservableMap<String, IOWrapper> getIoPoints() {
         return ioPoints.get();
+    }
+
+    public Collection<String> getPluginsExtensionsTitles() {
+        return ioPoints.keySet();
+    }
+
+    public Collection<String> getAllPluginsTitles() {
+        return processElements.keySet();
     }
 
     public SimpleMapProperty<String, IOWrapper> ioPointsProperty() {

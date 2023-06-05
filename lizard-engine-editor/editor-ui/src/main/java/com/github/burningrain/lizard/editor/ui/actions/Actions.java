@@ -2,6 +2,7 @@ package com.github.burningrain.lizard.editor.ui.actions;
 
 public interface Actions {
 
+    String NEW_PROCESS = "NEW_PROCESS";
     String OPEN_PROCESS = "OPEN_PROCESS_ACTION";
     String SAVE_PROCESS = "SAVE_PROCESS";
     String EXPORT_PROCESS = "EXPORT_PROCESS";
@@ -16,7 +17,5 @@ public interface Actions {
     String DELETE_SELECTED_VERTEX_ACTION = "DELETE_SELECTED_VERTEX_ACTION";
 
     String SHOW_ABOUT_LIZARD_EDITOR = "SHOW_ABOUT_LIZARD_EDITOR";
-
     String SHOW_GRID_SETTINGS = "SHOW_GRID_SETTINGS";
-
 }

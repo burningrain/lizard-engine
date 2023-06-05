@@ -3,6 +3,8 @@ package com.github.burningrain.lizard.editor.ui.components;
 import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.overview.GraphOverview;
 import com.github.burningrain.lizard.editor.api.LizardUiApi;
+import com.github.burningrain.lizard.editor.api.project.ProcessViewModel;
+import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.*;
 import com.github.burningrain.lizard.editor.ui.components.controllers.*;
 import com.github.burningrain.lizard.editor.ui.components.controllers.custom.CustomElementInspectorController;
@@ -11,6 +13,8 @@ import com.github.burningrain.lizard.editor.ui.core.UiComponent;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import com.github.burningrain.lizard.editor.ui.utils.FxUtils;
 import javafx.beans.property.SimpleSetProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Node;
@@ -40,7 +44,7 @@ public class InspectorComponent implements UiComponent<Pane> {
     private InspectorVertexDefaultUiController vertexDefaultUiController;
     private InspectorEdgeDefaultUiController edgeDefaultUiController;
 
-    private DefaultInspectorController<ProcessViewModelImpl<?, ?>> processController;
+    private DefaultInspectorController<ProcessViewModel<?, ?>> processController;
 
     private DefaultInspectorController defaultInspectorController;
     private UiController customInspectorController;
@@ -65,20 +69,12 @@ public class InspectorComponent implements UiComponent<Pane> {
                 return;
             }
 
-
-            if (isUiControllersBound) {
-                pane.getChildren().remove(defaultInspectorController.unbind());
-
-                Node node = customInspectorController.unbind();
-                if (node != null) {
-                    pane.getChildren().remove(node);
-                }
-            }
+            unbindControllersIfNeed();
 
             ObservableSet<? extends GraphElementViewModel> set = change.getSet();
             if (set.size() == 0) {
                 // элемент не выбран. возврат к основному отображению свойств самого процесса
-                ProcessViewModelImpl processViewModel = (ProcessViewModelImpl)store.getCurrentProjectModel().getProcessViewModel();
+                ProcessViewModel processViewModel = store.getCurrentProjectModel().getProcessViewModel();
                 setInspectorPanel(
                         processController,
                         processViewModel,
@@ -111,7 +107,31 @@ public class InspectorComponent implements UiComponent<Pane> {
         }
     };
 
-    private <A extends LizardModel, B extends Serializable> void setInspectorPanel(
+    private void unbindControllersIfNeed() {
+        if (isUiControllersBound) {
+            pane.getChildren().remove(defaultInspectorController.unbind());
+
+            Node node = customInspectorController.unbind();
+            if (node != null) {
+                pane.getChildren().remove(node);
+            }
+        }
+    }
+
+    private final ChangeListener<ProjectModel> currentProjectChangeListener = new ChangeListener<ProjectModel>() {
+        @Override
+        public void changed(ObservableValue<? extends ProjectModel> observable, ProjectModel oldValue, ProjectModel newValue) {
+            unbindControllersIfNeed();
+            setInspectorPanel(
+                    processController,
+                    newValue.getProcessViewModel(),
+                    createNewCustomInspector(true)
+            );
+            isUiControllersBound = true;
+        }
+    };
+
+    private <A extends LizardModel> void setInspectorPanel(
             DefaultInspectorController<A> defaultInspectorController,
             A inspectorModel,
             UiController customInspectorController
@@ -145,6 +165,8 @@ public class InspectorComponent implements UiComponent<Pane> {
         vertexDefaultUiController = createDefaultInspectorController(new InspectorVertexDefaultUiController(), InspectorVertexDefaultUiController.FXML_PATH);
         edgeDefaultUiController = createDefaultInspectorController(new InspectorEdgeDefaultUiController(), InspectorEdgeDefaultUiController.FXML_PATH);
         processController = createDefaultInspectorController(new DefaultProcessInspectorController(), DefaultProcessInspectorController.FXML_PATH);
+
+        store.currentProjectModelProperty().addListener(currentProjectChangeListener);
     }
 
     private UiController createNewCustomInspector(boolean isProcessCustomController) {
@@ -159,6 +181,10 @@ public class InspectorComponent implements UiComponent<Pane> {
     @Override
     public void deactivate() {
         pane.getChildren().clear();
+        store.currentProjectModelProperty().removeListener(currentProjectChangeListener);
+        vertexDefaultUiController = null;
+        edgeDefaultUiController = null;
+        processController = null;
     }
 
     @Override

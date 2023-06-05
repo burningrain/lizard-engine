@@ -3,7 +3,9 @@ package com.github.burningrain.lizard.editor.ui.components.editor;
 import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.model.*;
 import com.github.burningrain.lizard.editor.api.*;
+import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.*;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsm;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.ProcessEditorFsmImpl;
 import com.github.burningrain.lizard.editor.ui.components.editor.mode.States;
@@ -11,10 +13,12 @@ import com.github.burningrain.lizard.editor.ui.core.UiComponent;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.*;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,8 +33,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Component
 public class ProcessEditorComponent implements UiComponent<BorderPane> {
@@ -214,23 +219,35 @@ public class ProcessEditorComponent implements UiComponent<BorderPane> {
         }
     };
 
-    @Override
-    public void activate() {
-        GraphViewModel graphViewModel = graphView.getGraphViewModel();
-        processEditorFsm = new ProcessEditorFsmImpl(graphView.getBindingsContainer(), actionManager, actionFactory, vertexDragAndDrop);
+    private final ChangeListener<ProjectModel> projectModelChangeListener = new ChangeListener<ProjectModel>() {
+        @Override
+        public void changed(ObservableValue<? extends ProjectModel> observable, ProjectModel oldProjectModel, ProjectModel currentProjectModel) {
+            ObservableMap<String, ProcessElementsWrapper> processElements = store.getProcessElements();
+            if(oldProjectModel != null) {
+                Set<String> oldPluginIds = oldProjectModel.getDescriptor().getPluginDescriptors()
+                        .stream()
+                        .map(PluginDescriptor::getPluginId)
+                        .collect(Collectors.toSet());
+                for (String oldPluginId : oldPluginIds) {
+                    ProcessElementsWrapper processElementsWrapper = processElements.get(oldPluginId);
+                    for (ProjectLifecycleListener projectLifecycleListener : processElementsWrapper.getProjectListeners().values()) {
+                        projectLifecycleListener.handleCloseProjectEvent(graphView, currentProjectModel);
+                    }
+                }
+            }
 
-        store.currentProjectModelProperty().addListener(observable -> {
+            GraphViewModel graphViewModel = graphView.getGraphViewModel();
             graphViewModel.clear();
             linkListenersToCurrentProcess(graphViewModel);
-            ProjectModelImpl currentProjectModel = store.getCurrentProjectModel();
-            //TODO сделать привязку конкретного плагина к конкретному виду фабрики ребер графа
-            Optional<ProcessElementsWrapper> optionalFirst = store.getProcessElements().values().stream().findFirst();
-            optionalFirst.ifPresent(processElementsWrapper -> {
-                Optional<ProjectLifecycleListener> first = processElementsWrapper.getProjectListeners().values().stream().findFirst();
-                first.ifPresent(projectLifecycleListener -> {
+
+            Set<String> pluginIds = store.getCurrentProjectPluginIds();
+
+            for (String pluginId : pluginIds) {
+                ProcessElementsWrapper processElementsWrapper = processElements.get(pluginId);
+                for (ProjectLifecycleListener projectLifecycleListener : processElementsWrapper.getProjectListeners().values()) {
                     projectLifecycleListener.handleOpenProjectEvent(graphView, currentProjectModel);
-                });
-            });
+                }
+            }
 
             ProcessViewModelImpl currentProcessViewModel = (ProcessViewModelImpl)currentProjectModel.getProcessViewModel();
             currentProcessViewModel.getVertexes().values().forEach((Consumer<VertexViewModel>) vertexViewModel -> {
@@ -239,14 +256,23 @@ public class ProcessEditorComponent implements UiComponent<BorderPane> {
             currentProcessViewModel.getEdges().values().forEach((Consumer<EdgeViewModel>) edgeViewModel -> {
                 showEdge(graphViewModel, edgeViewModel);
             });
-            //TODO сделать привязку конкретного плагина к конкретному виду фабрики ребер графа
-            optionalFirst.ifPresent(processElementsWrapper -> {
-                Optional<EdgeFactoryWrapper> first = processElementsWrapper.getEdgeFactories().values().stream().findFirst();
-                currentProcessViewModel.selectedEdgeTypeProperty().set(first.get().getType());
-            });
+
+            //todo тут нужно выбирать первый элемент, а после дать пользователю возможность выбора типов дуг
+            for (String pluginId : pluginIds) {
+                ProcessElementsWrapper processElementsWrapper = processElements.get(pluginId);
+                for (EdgeFactoryWrapper edgeWrapper : processElementsWrapper.getEdgeFactories().values()) {
+                    currentProcessViewModel.selectedEdgeTypeProperty().set(edgeWrapper.getType());
+                }
+            }
 
             borderPane.setTop(createInstrumentsHeader());
-        });
+        }
+    };
+
+    @Override
+    public void activate() {
+        processEditorFsm = new ProcessEditorFsmImpl(graphView.getBindingsContainer(), actionManager, actionFactory, vertexDragAndDrop);
+        store.currentProjectModelProperty().addListener(projectModelChangeListener);
 
         borderPane.setLeft(createModesPane());
         borderPane.setCenter(graphView);

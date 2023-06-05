@@ -1,17 +1,18 @@
 package com.github.burningrain.lizard.editor.ui.components;
 
-import com.github.burningrain.lizard.editor.ui.actions.impl.LoadPluginDataToStoreAction;
+import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
 import com.github.burningrain.lizard.editor.ui.core.UiComponent;
-import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
-import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
 import com.github.burningrain.lizard.editor.ui.model.ProcessElementsWrapper;
 import com.github.burningrain.lizard.editor.ui.model.Store;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.TitledPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.Objects;
 
 @Component
 public class AccordionComponent implements UiComponent<Accordion> {
@@ -20,15 +21,9 @@ public class AccordionComponent implements UiComponent<Accordion> {
     private Store store;
 
     @Autowired
-    private ActionManager actionManager;
-
-    @Autowired
-    private ActionFactory actionFactory;
-
-    @Autowired
     private VertexDragAndDrop vertexDragAndDrop;
 
-    private Accordion accordion = new Accordion();
+    private final Accordion accordion = new Accordion();
 
 
     @Override
@@ -38,18 +33,26 @@ public class AccordionComponent implements UiComponent<Accordion> {
 
     @Override
     public void activate() {
-        actionManager.executeAction(actionFactory.createAction(LoadPluginDataToStoreAction.class)); //todo вынести отсюда куда-нить в инициализацию
-
-        for (Map.Entry<String, ProcessElementsWrapper> entry : store.getProcessElements().entrySet()) {
-            TitledPaneComponent titledPaneComponent = new TitledPaneComponent(entry.getKey(), vertexDragAndDrop, entry.getValue().getVertexFactories().values());
-            accordion.getPanes().add(titledPaneComponent.getTitledPane());
-        }
+        store.currentProjectModelProperty().addListener((observable, oldValue, newValue) -> {
+            accordion.getPanes().clear();
+            Collection<PluginDescriptor> pluginDescriptors = newValue.getDescriptor().getPluginDescriptors();
+            for (PluginDescriptor pluginDescriptor : pluginDescriptors) {
+                String pluginId = pluginDescriptor.getPluginId();
+                ProcessElementsWrapper elementsWrapper = store.getProcessElements().get(pluginId);
+                Objects.requireNonNull(elementsWrapper);
+                TitledPaneComponent titledPaneComponent = new TitledPaneComponent(pluginId, vertexDragAndDrop, elementsWrapper.getVertexFactories().values());
+                accordion.getPanes().add(titledPaneComponent.getTitledPane());
+            }
+            ObservableList<TitledPane> panes = accordion.getPanes();
+            if(panes != null && !panes.isEmpty()) {
+                accordion.setExpandedPane(panes.stream().findFirst().get());
+            }
+        });
     }
 
     @Override
     public void deactivate() {
         accordion.getPanes().clear();
-        accordion = null;
     }
 
 }

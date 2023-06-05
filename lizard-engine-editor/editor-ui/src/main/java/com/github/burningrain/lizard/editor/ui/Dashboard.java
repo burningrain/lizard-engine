@@ -1,22 +1,19 @@
 package com.github.burningrain.lizard.editor.ui;
 
-import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.ui.actions.impl.LoadPluginDataToStoreAction;
+import com.github.burningrain.lizard.editor.ui.components.AccordionComponent;
+import com.github.burningrain.lizard.editor.ui.components.InspectorComponent;
+import com.github.burningrain.lizard.editor.ui.components.editor.ProcessEditorComponent;
+import com.github.burningrain.lizard.editor.ui.core.StageManagerImpl;
+import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
+import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
+import com.github.burningrain.lizard.editor.ui.model.Store;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.github.burningrain.lizard.editor.ui.components.AccordionComponent;
-import com.github.burningrain.lizard.editor.ui.components.InspectorComponent;
-import com.github.burningrain.lizard.editor.ui.components.editor.ProcessEditorComponent;
-import com.github.burningrain.lizard.editor.ui.core.StageManagerImpl;
-import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
-import com.github.burningrain.lizard.editor.ui.io.ProjectDescriptorImpl;
-import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
-import com.github.burningrain.lizard.editor.ui.model.Store;
-
-import java.util.Map;
 
 public class Dashboard extends StageManagerImpl {
 
@@ -31,6 +28,12 @@ public class Dashboard extends StageManagerImpl {
 
     @Autowired
     private Store store;
+
+    @Autowired
+    private ActionManager actionManager;
+
+    @Autowired
+    private ActionFactory actionFactory;
 
     private SplitPane splitPane;
 
@@ -55,18 +58,15 @@ public class Dashboard extends StageManagerImpl {
 
     @Override
     public void activate() {
-        accordionComponent.activate();
-        processEditorComponent.activate();
-        inspectorComponent.activate();
     }
 
     @Override
     public void afterActivation() {
-        ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
-        for (Map.Entry<String, ProcessPropertiesInspectorBinder> entry : store.getProcessPropertyBinders().entrySet()) {
-            processViewModel.putDatum(entry.getKey(), entry.getValue().createNewNodeModel());
-        }
-        store.setCurrentProjectModel(new ProjectModelImpl(new ProjectDescriptorImpl(), processViewModel));
+        actionManager.executeAction(actionFactory.createAction(LoadPluginDataToStoreAction.class)); //todo вынести отсюда куда-нить в инициализацию
+
+        accordionComponent.activate();
+        processEditorComponent.activate();
+        inspectorComponent.activate();
     }
 
     private Node createCenterNode() {

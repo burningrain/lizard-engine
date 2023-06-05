@@ -10,7 +10,7 @@ import java.util.List;
 public class IOWrapper {
 
     private int count;
-    private HashMap<String, List<ImportExportExtPoint>> extensionsMap = new HashMap<>();
+    private final HashMap<String, List<ImportExportExtPoint>> extensionsMap = new HashMap<>();
 
     public void add(String pluginId, ImportExportExtPoint point) {
         List<ImportExportExtPoint> importExportExtPoints = extensionsMap.computeIfAbsent(pluginId, k -> new ArrayList<>());

@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 //TODO переписать это с мап на объект плагина, все остальное в нем. А тут просто одна мапа: название плагина - объект плагина
 public class ProcessElementsWrapper {
 
-    private SimpleMapProperty<String, VertexFactoryWrapper> vertexFactories = new SimpleMapProperty<>();
-    private SimpleMapProperty<String, EdgeFactoryWrapper> edgeFactories = new SimpleMapProperty<>();
+    private final SimpleMapProperty<String, VertexFactoryWrapper> vertexFactories = new SimpleMapProperty<>();
+    private final SimpleMapProperty<String, EdgeFactoryWrapper> edgeFactories = new SimpleMapProperty<>();
 
-    private SimpleMapProperty<String, ProcessPropertiesInspectorBinder> processInspectorBinders = new SimpleMapProperty<>();
-    private SimpleMapProperty<String, ProjectLifecycleListener> projectListeners = new SimpleMapProperty<>();
+    private final SimpleMapProperty<String, ProcessPropertiesInspectorBinder> processInspectorBinders = new SimpleMapProperty<>();
+    private final SimpleMapProperty<String, ProjectLifecycleListener> projectListeners = new SimpleMapProperty<>();
 
     public ProcessElementsWrapper(String pluginId, List<ProcessElementsExtPoint> extensions) {
         //TODO это надо убирать и делать один нормальный цикл

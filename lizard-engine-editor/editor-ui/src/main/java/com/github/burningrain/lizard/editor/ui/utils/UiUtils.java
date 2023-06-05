@@ -4,10 +4,12 @@ import com.github.burningrain.gvizfx.handlers.ActionHandler;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
 import com.github.burningrain.lizard.editor.ui.model.IOWrapper;
 import com.github.burningrain.lizard.editor.ui.model.Store;
+import com.github.burningrain.lizard.editor.ui.window.PluginIdChooserWindowController;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -41,9 +43,9 @@ public class UiUtils {
         consumer.accept(primaryStage);
     }
 
-    public void showDialogChoosePlugin(Collection<String> plugins, Consumer<String> consumer) {
+    public void showDialogChoosePluginExt(Collection<String> plugins, Consumer<String> consumer) {
         this.createStageChild(stage -> {
-            Label label = new Label("Обнаружено несколько подходящих плагинов. Выберите какой использовать:");
+            Label label = new Label("Some plugins have been found. Please, choose one:");
             ComboBox<String> comboBox = new ComboBox<>();
             comboBox.getItems().addAll(plugins);
 
@@ -52,7 +54,7 @@ public class UiUtils {
 
             Stage modalWindow = new Stage();
             modalWindow.setResizable(false);
-            modalWindow.setTitle("Выбор плагина");
+            modalWindow.setTitle("Choosing a plugin");
             modalWindow.setScene(new Scene(pane));
             modalWindow.initModality(Modality.WINDOW_MODAL);
             modalWindow.initOwner(stage);
@@ -63,13 +65,42 @@ public class UiUtils {
         });
     }
 
+    public void showDialogChoosePluginId(Store store, Consumer<String> consumer) {
+        this.createStageChild(stage -> {
+            Platform.runLater(() -> {
+                PluginIdChooserWindowController controller = new PluginIdChooserWindowController();
+                Pane rootNode = FxUtils.loadFxml(controller, PluginIdChooserWindowController.FXML_PATH);
+
+                Stage modalWindow = new Stage();
+                modalWindow.setResizable(false);
+                modalWindow.setTitle("Choosing a plugin");
+                modalWindow.setScene(new Scene(rootNode));
+                modalWindow.initModality(Modality.WINDOW_MODAL);
+                modalWindow.initOwner(stage);
+
+                controller.init(
+                        store,
+                        "Choose a plugin:",
+                        (String pluginId) -> {
+                            modalWindow.close();
+                            consumer.accept(pluginId);
+                        },
+                        event -> {
+                            modalWindow.close();
+                        }
+                );
+                modalWindow.show();
+            });
+        });
+    }
+
     public ImportExportExtPoint chooseImportExportExtPoint(String extension) {
         IOWrapper ioWrapper = store.getIoPoints().get(extension);
         AtomicReference<ImportExportExtPoint> importExportExtPoint = new AtomicReference<>();
         if (ioWrapper.getSize() == 1) {
             importExportExtPoint.set(ioWrapper.getFirst());
         } else if (ioWrapper.getSize() != 0) {
-            showDialogChoosePlugin(ioWrapper.getPlugins(), pluginId -> {
+            showDialogChoosePluginExt(ioWrapper.getPlugins(), pluginId -> {
                 List<ImportExportExtPoint> points = ioWrapper.getPoints(pluginId);
                 if (points.size() == 1) {
                     importExportExtPoint.set(points.get(0));
@@ -87,7 +118,7 @@ public class UiUtils {
             Platform.runLater(() -> {
                 File file = fileChooser.showOpenDialog(stage);
                 //todo в другом потоке.
-                if(file != null) {
+                if (file != null) {
                     consumer.accept(file);
                 }
             });

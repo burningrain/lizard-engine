@@ -35,6 +35,7 @@ public class MenuInitializerImpl implements MenuInitializer {
     private Menu createMenuFile() {
         Menu menuFile = new Menu("File");
         menuFile.getItems().addAll(
+                createMenuItem("new project", actionFactory.createAction(NewProcessAction.class), new KeyCodeCombination(KeyCode.P, KeyCodeCombination.CONTROL_DOWN)),
                 createMenuItem("open...", actionFactory.createAction(OpenProcessAction.class), new KeyCodeCombination(KeyCode.O, KeyCodeCombination.CONTROL_DOWN)),
                 createMenuItem("save as...", actionFactory.createAction(SaveProcessAction.class), new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN)),
                 createMenuItem("import...", actionFactory.createAction(ImportProcessAction.class), new KeyCodeCombination(KeyCode.I, KeyCodeCombination.CONTROL_DOWN)),

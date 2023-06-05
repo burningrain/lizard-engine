@@ -8,13 +8,11 @@ import com.github.burningrain.lizard.editor.ui.model.Store;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CustomProcessInspectorController extends CustomInspectorController<Serializable> {
 
@@ -24,15 +22,15 @@ public class CustomProcessInspectorController extends CustomInspectorController<
 
     @Override
     protected PropertiesInspectorBinder getBinder(Serializable model, Store store) {
-        return new PropertiesInspectorBinderImpl(store.getProcessPropertyBinders());
+        return new PropertiesInspectorBinderImpl(store);
     }
 
     private static class PropertiesInspectorBinderImpl implements PropertiesInspectorBinder<HashMap<String, Serializable>, NodeContainerImpl> {
 
-        private final Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders;
+        private final Store store;
 
-        public PropertiesInspectorBinderImpl(Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders) {
-            this.processPropertyBinders = processPropertyBinders;
+        public PropertiesInspectorBinderImpl(Store store) {
+            this.store = store;
         }
 
         @Override
@@ -47,7 +45,7 @@ public class CustomProcessInspectorController extends CustomInspectorController<
 
         @Override
         public NodeContainerImpl createPropertiesInspector() {
-            return new NodeContainerImpl(processPropertyBinders);
+            return new NodeContainerImpl(store);
         }
 
     }
@@ -55,17 +53,24 @@ public class CustomProcessInspectorController extends CustomInspectorController<
     private static class NodeContainerImpl implements NodeContainer {
 
         private final Map<String, NodeContainer> nodeMap;
-        private final Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders;
+        private final Store store;
         private final VBox vBox = new VBox();
 
-        public NodeContainerImpl(Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders) {
-            this.processPropertyBinders = processPropertyBinders;
+        public NodeContainerImpl(Store store) {
+            this.store = store;
 
-            // todo убрать после смены парадигмы на "1 плагин = 1 проект"
+            Set<String> pluginIds = store.getCurrentProjectPluginIds();
+            if (pluginIds.isEmpty()) {
+                this.nodeMap = Collections.emptyMap();
+                return;
+            }
+
+            Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
             HashMap<String, NodeContainer> nodeMap = new HashMap<>();
-            for (Map.Entry<String, ProcessPropertiesInspectorBinder> entry : processPropertyBinders.entrySet()) {
-                NodeContainer propertiesInspector = entry.getValue().createPropertiesInspector();
-                nodeMap.put(entry.getKey(), propertiesInspector);
+            for (String pluginId : pluginIds) {
+                ProcessPropertiesInspectorBinder inspectorBinder = processPropertyBinders.get(pluginId);
+                NodeContainer propertiesInspector = inspectorBinder.createPropertiesInspector();
+                nodeMap.put(pluginId, propertiesInspector);
                 Node node = propertiesInspector.getNode();
                 vBox.getChildren().add(node);
                 vBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
@@ -75,6 +80,7 @@ public class CustomProcessInspectorController extends CustomInspectorController<
         }
 
         public void bindInspector(HashMap<String, Serializable> model) {
+            Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
             for (Map.Entry<String, Serializable> entry : model.entrySet()) {
                 String pluginId = entry.getKey();
                 processPropertyBinders.get(pluginId).bindInspector(entry.getValue(), nodeMap.get(pluginId));
@@ -82,6 +88,7 @@ public class CustomProcessInspectorController extends CustomInspectorController<
         }
 
         public void unbindInspector(HashMap<String, Serializable> model) {
+            Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
             for (Map.Entry<String, Serializable> entry : model.entrySet()) {
                 String pluginId = entry.getKey();
                 processPropertyBinders.get(pluginId).unbindInspector(entry.getValue(), nodeMap.get(pluginId));

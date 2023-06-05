@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.editor.api.project;
 
 import com.github.burningrain.lizard.editor.api.project.model.*;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableMap;
@@ -26,5 +27,9 @@ public interface ProcessViewModel<V extends Serializable, E extends Serializable
     SimpleSetProperty<GraphElementViewModel> selectedGraphElementsProperty();
 
     ObservableSet<GraphElementViewModel> getSelectedGraphElements();
+
+    Property<String> processNameProperty();
+
+    Property<String> descriptionProperty();
 
 }

@@ -1,5 +1,6 @@
 package com.github.burningrain.lizard.editor.ui.actions.impl;
 
+import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.EdgeViewModel;
 import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModel;
 import com.github.burningrain.lizard.editor.api.project.model.GraphElementViewModelVisitor;
@@ -24,7 +25,7 @@ public class DeleteCurrentElementFromEditorAction implements RevertAction {
 
     private List<GraphElementViewModel> viewModelList;
 
-    private ProjectModelImpl projectModel;
+    private ProjectModel projectModel;
 
     @Autowired
     private Store store;
