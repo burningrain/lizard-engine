@@ -6,6 +6,7 @@ import com.github.burningrain.gvizfx.element.VertexElement;
 import com.github.burningrain.gvizfx.property.SimpleGraphElementProperty;
 import com.github.burningrain.gvizfx.element.edge.line.LineEdgeFactory;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableMap;
@@ -115,6 +116,11 @@ public class GraphViewModelImpl implements GraphViewModel {
     public void clear() {
         //todo
         simpleGraphViewModel.clear();
+    }
+
+    @Override
+    public BooleanProperty isClearExecutedProperty() {
+        return simpleGraphViewModel.isClearExecutedProperty();
     }
 
 }

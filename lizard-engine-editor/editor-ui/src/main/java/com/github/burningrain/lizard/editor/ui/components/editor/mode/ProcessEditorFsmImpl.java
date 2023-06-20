@@ -26,6 +26,10 @@ public class ProcessEditorFsmImpl implements ProcessEditorFsm {
 
     public ProcessEditorFsmImpl(GraphViewBindersContainer bindersContainer, ActionManager actionManager, ActionFactory actionFactory, VertexDragAndDrop vertexDragAndDrop) {
         this.bindersContainer = bindersContainer;
+        init(actionManager, actionFactory, vertexDragAndDrop);
+    }
+
+    private void init(ActionManager actionManager, ActionFactory actionFactory, VertexDragAndDrop vertexDragAndDrop) {
         initPersistBinders(actionManager, actionFactory, vertexDragAndDrop);
         initContainers(actionManager, actionFactory);
         changeState(States.NONE);
@@ -43,6 +47,11 @@ public class ProcessEditorFsmImpl implements ProcessEditorFsm {
 
         this.currentStateEnum = newState;
         switchMouseGestures(mouseHandlersContainer);
+    }
+
+    @Override
+    public void dispose() {
+        currentFsmState.cancel(bindersContainer);
     }
 
     private void initPersistBinders(ActionManager actionManager, ActionFactory actionFactory, VertexDragAndDrop vertexDragAndDrop) {

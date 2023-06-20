@@ -35,7 +35,7 @@ public class ProcessElementsExtPointPlanetBotImpl implements ProcessElementsExtP
 
     @Override
     public ProjectLifecycleListener getProjectLifecycleListener() {
-        return null;
+        return new ProjectLifecycleListenerImpl();
     }
 
 }

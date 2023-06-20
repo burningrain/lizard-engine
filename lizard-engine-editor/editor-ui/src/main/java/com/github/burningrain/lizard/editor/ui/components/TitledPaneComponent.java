@@ -13,11 +13,11 @@ import java.util.Collection;
 
 public class TitledPaneComponent {
 
-    private VertexDragAndDrop vertexDragAndDrop;
+    private final VertexDragAndDrop vertexDragAndDrop;
 
-    private TitledPane titledPane;
-    private StackPane stackPane;
-    private ListView<VertexFactoryWrapper> listView;
+    private final TitledPane titledPane;
+    private final StackPane stackPane;
+    private final ListView<VertexFactoryWrapper> listView;
 
 
     public TitledPaneComponent(String pluginId, VertexDragAndDrop vertexDragAndDrop, Collection<VertexFactoryWrapper> vertexFactoryWrappers) {

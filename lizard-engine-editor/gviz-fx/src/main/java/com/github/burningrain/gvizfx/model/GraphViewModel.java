@@ -3,6 +3,7 @@ package com.github.burningrain.gvizfx.model;
 import com.github.burningrain.gvizfx.element.EdgeElement;
 import com.github.burningrain.gvizfx.element.edge.EdgeFactory;
 import com.github.burningrain.gvizfx.element.VertexElement;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableMap;
@@ -32,5 +33,7 @@ public interface GraphViewModel {
     EdgeFactory<? extends EdgeElement> getEdgeFactory();
 
     void clear();
+
+    BooleanProperty isClearExecutedProperty();
 
 }

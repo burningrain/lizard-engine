@@ -75,7 +75,7 @@ public class ImportProcessAction implements NotRevertAction {
         }
         ProcessViewModelImpl processViewModel = exportImportConverter.from(importExportExtPoint.read(pluginApi, file.getName(), bytes));
 
-        store.setCurrentProjectModel(new ProjectModelImpl(projectConverter.createNewDescriptor(processViewModel), processViewModel));
+        store.changeCurrentProject(new ProjectModelImpl(projectConverter.createNewDescriptor(processViewModel), processViewModel));
     }
 
 }

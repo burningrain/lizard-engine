@@ -6,6 +6,7 @@ import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class Store {
 
     private final SimpleObjectProperty<ProjectModel> currentProjectModel = new SimpleObjectProperty<>();
+    private final SimpleMapProperty<String, ProjectModel> projectModels = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     private final SimpleMapProperty<String, ProcessElementsWrapper> processElements = new SimpleMapProperty<>();
     private final SimpleMapProperty<String, IOWrapper> ioPoints = new SimpleMapProperty<>();
@@ -47,6 +49,29 @@ public class Store {
 
     public void setCurrentProjectModel(ProjectModel currentProcessViewModel) {
         this.currentProjectModel.set(currentProcessViewModel);
+    }
+
+    public void changeCurrentProject(ProjectModel currentProcessViewModel) {
+        Objects.requireNonNull(currentProcessViewModel);
+        projectModels.put(currentProcessViewModel.getDescriptor().getTitle(), currentProcessViewModel);
+        setCurrentProjectModel(currentProcessViewModel);
+    }
+
+    public void changeCurrentProject(String id) {
+        Objects.requireNonNull(id);
+        changeCurrentProject(Objects.requireNonNull(projectModels.get(id), "project model must not be null"));
+    }
+
+    public ObservableMap<String, ProjectModel> getProjectModels() {
+        return projectModels.get();
+    }
+
+    public SimpleMapProperty<String, ProjectModel> projectModelsProperty() {
+        return projectModels;
+    }
+
+    public void setProjectModels(ObservableMap<String, ProjectModel> projectModels) {
+        this.projectModels.set(projectModels);
     }
 
     public ObservableMap<String, IOWrapper> getIoPoints() {

@@ -6,4 +6,6 @@ public interface ProcessEditorFsm {
 
     void changeState(States newState);
 
+    void dispose();
+
 }

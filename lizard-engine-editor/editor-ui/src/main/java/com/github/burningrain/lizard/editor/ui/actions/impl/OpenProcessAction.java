@@ -36,7 +36,7 @@ public class OpenProcessAction implements NotRevertAction {
 
     private void handle(File file) {
         try {
-            store.setCurrentProjectModel(projectConverter.importProject(file));
+            store.changeCurrentProject(projectConverter.importProject(file));
         } catch (Exception e) {
             throw new RuntimeException(e); //todo
         }

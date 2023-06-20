@@ -4,13 +4,14 @@ package com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.edge;
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.AnimationModel;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class SimpleAnimationEdgeModel implements AnimationModel {
 
     private final SimpleStringProperty from = new SimpleStringProperty(this, "from");
     private final SimpleStringProperty to = new SimpleStringProperty(this, "to");
-    private final SimpleListProperty<PredicateModel> fsmPredicates = new SimpleListProperty<>(this, "fsmPredicates");
+    private final SimpleListProperty<PredicateModel> fsmPredicates = new SimpleListProperty<>(this, "fsmPredicates", FXCollections.observableArrayList());
 
     public String getFrom() {
         return from.get();

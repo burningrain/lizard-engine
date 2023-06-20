@@ -10,6 +10,8 @@ public class SimpleAnimationEdgeFactory implements EdgeFactory<SimpleAnimationEd
     private final EdgePropertiesInspectorBinderImpl inspectorBinder = new EdgePropertiesInspectorBinderImpl();
     private final EdgeElementDataConverterImpl dataConverter = new EdgeElementDataConverterImpl();
 
+    private final SimpleAnimationEdgeModelBinderImpl edgeModelBinder = new SimpleAnimationEdgeModelBinderImpl();
+
     @Override
     public String getTitle() {
         return Constants.ANIMATION_TRANSITION;
@@ -27,7 +29,7 @@ public class SimpleAnimationEdgeFactory implements EdgeFactory<SimpleAnimationEd
 
     @Override
     public EdgeModelBinder<SimpleAnimationEdgeModel, Node> getElementModelBinder() {
-        return null;
+        return edgeModelBinder;
     }
 
     @Override

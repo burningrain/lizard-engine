@@ -42,15 +42,19 @@ public class NewProcessAction implements NotRevertAction {
     }
 
     private void createProject(String pluginId) {
+        String title = UUID.randomUUID().toString();
+
         ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
+        processViewModel.setProcessName(title);
+
         ProcessPropertiesInspectorBinder processBinder = store.getProcessPropertyBinders().get(pluginId);
         processViewModel.putDatum(pluginId, processBinder.createNewNodeModel());
-        store.setCurrentProjectModel(new ProjectModelImpl(createDescriptor(pluginId), processViewModel));
+        store.changeCurrentProject(new ProjectModelImpl(createDescriptor(title, pluginId), processViewModel));
     }
 
-    private ProjectDescriptorImpl createDescriptor(String pluginId) {
+    private ProjectDescriptorImpl createDescriptor(String title, String pluginId) {
         List<PluginDescriptor> descriptorsList = projectConverter.createPluginDescriptorsList(Collections.singleton(pluginId), null);
-        return projectConverter.createNewDescriptor(UUID.randomUUID().toString(), "", descriptorsList);
+        return projectConverter.createNewDescriptor(title, "", descriptorsList);
     }
 
 }

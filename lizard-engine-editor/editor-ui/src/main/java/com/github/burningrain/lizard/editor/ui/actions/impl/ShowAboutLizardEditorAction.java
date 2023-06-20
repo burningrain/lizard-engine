@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.pf4j.PluginDescriptor;
@@ -41,7 +42,7 @@ public class ShowAboutLizardEditorAction implements NotRevertAction {
         List<PluginDescriptor> descriptors = pluginManager.getStartedPlugins().stream().map(PluginWrapper::getDescriptor).collect(Collectors.toList());
 
         //todo вынести это отсюда
-        FlowPane flowPane = new FlowPane();
+        VBox pane = new VBox();
         descriptors.forEach(pluginDescriptor -> {
             Button button = new Button(pluginDescriptor.getPluginId());
             button.setOnAction(event -> {
@@ -62,14 +63,14 @@ public class ShowAboutLizardEditorAction implements NotRevertAction {
                 Optional<ButtonType> result = alertDialog.showAndWait();
             });
 
-            flowPane.getChildren().add(button);
+            pane.getChildren().add(button);
         });
 
         uiUtils.createStageChild(stage -> {
             Stage modalWindow = new Stage();
             modalWindow.setResizable(false);
             modalWindow.setTitle("About");
-            modalWindow.setScene(new Scene(flowPane));
+            modalWindow.setScene(new Scene(pane));
             modalWindow.initModality(Modality.WINDOW_MODAL);
             modalWindow.initOwner(stage);
             Platform.runLater(modalWindow::show);

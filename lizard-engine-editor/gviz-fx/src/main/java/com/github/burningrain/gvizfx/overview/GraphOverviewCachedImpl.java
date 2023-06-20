@@ -89,6 +89,13 @@ public class GraphOverviewCachedImpl extends AnchorPane implements GraphOverview
         }
     };
 
+    private final ChangeListener<Boolean> isClearExecutedListener = (observable, oldValue, newValue) -> {
+        if(newValue) {
+            edgesMap.clear();
+            vertexesMap.clear();
+        }
+    };
+
     private void addEdgeToMinimap(EdgeElementWrapper valueAdded) {
         EdgeElement element = valueAdded.getElement();
 
@@ -160,6 +167,7 @@ public class GraphOverviewCachedImpl extends AnchorPane implements GraphOverview
         GraphViewModel graphViewModel = this.graphViewData.getGraphViewModel();
         graphViewModel.verticesProperty().addListener(vertexesListener);
         graphViewModel.edgesProperty().addListener(edgesListener);
+        graphViewModel.isClearExecutedProperty().addListener(isClearExecutedListener);
 
         this.getChildren().add(canvas);
         this.getChildren().add(rectangle);
@@ -189,6 +197,7 @@ public class GraphOverviewCachedImpl extends AnchorPane implements GraphOverview
         GraphViewModel graphViewModel = this.graphViewData.getGraphViewModel();
         graphViewModel.verticesProperty().removeListener(vertexesListener);
         graphViewModel.edgesProperty().removeListener(edgesListener);
+        graphViewModel.isClearExecutedProperty().removeListener(isClearExecutedListener);
         this.graphViewData = null;
         this.graphOverviewProperty = null;
     }
