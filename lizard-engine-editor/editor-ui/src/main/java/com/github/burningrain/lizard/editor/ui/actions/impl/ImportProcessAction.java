@@ -8,6 +8,7 @@ import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.utils.FileUtils;
+import com.github.burningrain.lizard.editor.ui.utils.ProjectUtils;
 import com.github.burningrain.lizard.editor.ui.utils.UiUtils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -75,7 +76,11 @@ public class ImportProcessAction implements NotRevertAction {
         }
         ProcessViewModelImpl processViewModel = exportImportConverter.from(importExportExtPoint.read(pluginApi, file.getName(), bytes));
 
-        store.changeCurrentProject(new ProjectModelImpl(projectConverter.createNewDescriptor(processViewModel), processViewModel));
+        store.changeCurrentProject(new ProjectModelImpl(
+                ProjectUtils.generateProjectId(),
+                projectConverter.createNewDescriptor(processViewModel),
+                processViewModel)
+        );
     }
 
 }

@@ -12,6 +12,7 @@ import com.github.burningrain.lizard.editor.ui.model.ProcessElementsWrapper;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
 import com.github.burningrain.lizard.editor.ui.model.defaultmodel.DefaultProcessElementsExtPoint;
+import com.github.burningrain.lizard.editor.ui.utils.ProjectUtils;
 import org.jgrapht.nio.ImportException;
 import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
@@ -71,7 +72,11 @@ public class ProjectConverter {
                             inspectorBinder.getElementDataConverter(), pluginProcessData));
         });
 
-        return new ProjectModelImpl(descriptor, processViewModel);
+        return new ProjectModelImpl(
+                ProjectUtils.generateProjectId(),
+                descriptor,
+                processViewModel
+        );
     }
 
     public void saveProject(String path, ProjectModel projectModel) throws IOException {

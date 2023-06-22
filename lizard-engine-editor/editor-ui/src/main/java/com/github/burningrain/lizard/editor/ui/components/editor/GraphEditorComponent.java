@@ -4,6 +4,7 @@ import com.github.burningrain.gvizfx.GraphView;
 import com.github.burningrain.gvizfx.model.*;
 import com.github.burningrain.lizard.editor.api.*;
 import com.github.burningrain.lizard.editor.api.project.ProjectDescriptor;
+import com.github.burningrain.lizard.editor.api.project.ProjectId;
 import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.*;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
@@ -222,13 +223,12 @@ public class GraphEditorComponent implements UiComponent<BorderPane> {
 
     @Override
     public void deactivate() {
-        String title = store.getCurrentProjectModel().getDescriptor().getTitle();
-        deactivate(title);
+        deactivate(store.getCurrentProjectModel().getId());
     }
 
-    private void deactivate(String processId) {
+    private void deactivate(ProjectId projectId) {
         graphView.getGraphViewModel().clear();
-        unlinkListenersToProcess(processId, graphView.getGraphViewModel());
+        unlinkListenersToProcess(projectId, graphView.getGraphViewModel());
         processEditorFsm.dispose();
     }
 
@@ -247,7 +247,7 @@ public class GraphEditorComponent implements UiComponent<BorderPane> {
                 }
             }
 
-            deactivate(descriptor.getTitle());
+            deactivate(oldProjectModel.getId());
         }
 
         GraphViewModel graphViewModel = graphView.getGraphViewModel();
@@ -325,8 +325,8 @@ public class GraphEditorComponent implements UiComponent<BorderPane> {
         graphViewModel.selectedElementsProperty().addListener(selectedElementListener);
     }
 
-    private void unlinkListenersToProcess(String processId, GraphViewModel graphViewModel) {
-        ProjectModel projectModel = store.getProjectModels().get(processId);
+    private void unlinkListenersToProcess(ProjectId projectId, GraphViewModel graphViewModel) {
+        ProjectModel projectModel = store.getProjectModels().get(projectId);
 
         projectModel.getProcessViewModel().getVertexes().removeListener(vertexMapChangeListener);
         projectModel.getProcessViewModel().getEdges().removeListener(edgeMapChangeListener);

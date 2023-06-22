@@ -1,12 +1,15 @@
 package com.github.burningrain.lizard.editor.ui.components.editor;
 
 import com.github.burningrain.gvizfx.GraphView;
+import com.github.burningrain.lizard.editor.api.project.ProjectId;
 import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.ui.core.UiComponent;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionFactory;
 import com.github.burningrain.lizard.editor.ui.core.action.ActionManager;
 import com.github.burningrain.lizard.editor.ui.draggers.VertexDragAndDrop;
 import com.github.burningrain.lizard.editor.ui.model.Store;
+import com.github.burningrain.lizard.editor.ui.utils.ProjectUtils;
+import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -29,9 +32,9 @@ public class TabPaneComponent implements UiComponent<TabPane> {
 
     private final TabPane tabPane = new TabPane();
 
-    private final HashSet<String> indices = new HashSet<>();
+    private final HashSet<ProjectId> indices = new HashSet<>();
     private GraphEditorComponent currentComponent;
-    private String currentTabId;
+    private ProjectId currentTabId;
 
     private final ChangeListener<ProjectModel> projectModelChangeListener = new ChangeListener<ProjectModel>() {
         @Override
@@ -40,26 +43,26 @@ public class TabPaneComponent implements UiComponent<TabPane> {
                 return;
             }
 
-            String title = newValue.getDescriptor().getTitle();
-            String oldTitle = null;
+            ProjectId projectId = newValue.getId();
+            ProjectId oldProjectId = null;
             if(oldValue != null) {
-                oldTitle = oldValue.getDescriptor().getTitle();
+                oldProjectId = oldValue.getId();
             }
 
-            if(oldTitle != null) {
-                deactivatePrevProjectTab(oldTitle);
+            if(oldProjectId != null) {
+                deactivatePrevProjectTab(oldProjectId);
             }
 
             Tab currentTab;
             // создали новый проект
-            if (!indices.contains(title)) {
-                indices.add(title);
+            if (!indices.contains(projectId)) {
+                indices.add(projectId);
 
-                currentTab = createTab(title, currentComponent.getNode());
+                currentTab = createTab(projectId, newValue.getProcessViewModel().processNameProperty(), currentComponent.getNode());
                 tabPane.getTabs().add(currentTab);
             } else {
                 // переоткрываем старый
-                currentTab = getTabById(title);
+                currentTab = getTabById(projectId);
                 currentTab.setContent(currentComponent.getNode());
             }
 
@@ -67,18 +70,19 @@ public class TabPaneComponent implements UiComponent<TabPane> {
             tabPane.getSelectionModel().select(currentTab);
             store.currentProjectModelProperty().addListener(projectModelChangeListener);
 
-            currentTabId = title;
+            currentTabId = projectId;
             currentComponent.changeProjectModel(oldValue, newValue);
         }
     };
 
-    private Tab getTabById(String tabId) {
-        Objects.requireNonNull(tabId);
+    private Tab getTabById(ProjectId projectId) {
+        Objects.requireNonNull(projectId);
+        String tabId = projectId.getId().toString();
         return tabPane.getTabs().stream().filter(tab -> tabId.equals(tab.getId())).findFirst().orElse(null);
     }
 
-    private void deactivatePrevProjectTab(String tabId) {
-        Tab tab = getTabById(tabId);
+    private void deactivatePrevProjectTab(ProjectId projectId) {
+        Tab tab = getTabById(projectId);
         if(tab != null) {
             tab.setContent(null);
         }
@@ -94,7 +98,7 @@ public class TabPaneComponent implements UiComponent<TabPane> {
                 return;
             }
 
-            store.changeCurrentProject(tab.getId());
+            store.changeCurrentProject(ProjectUtils.fromStringUUID(tab.getId()));
         }
     };
 
@@ -128,13 +132,14 @@ public class TabPaneComponent implements UiComponent<TabPane> {
         store.getProjectModels().remove(tabId);
     }
 
-    private Tab createTab(String tabId, Node content) {
+    private Tab createTab(ProjectId tabId, Property<String> name, Node content) {
         Tab tab = new Tab();
-        tab.setId(tabId);
-        tab.setText(tabId);
+        tab.setId(tabId.getId().toString());
+        tab.textProperty().bind(name);
         tab.setContent(content);
         tab.setOnClosed(event -> {
             Tab t = (Tab) event.getSource();
+            t.textProperty().unbind();
             deleteProject(t.getId());
         });
         tab.setOnSelectionChanged(selectionHandler);

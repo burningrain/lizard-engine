@@ -17,6 +17,9 @@ Lizard Editor is the graph editor that is based on a plugin architecture. This p
 ![lizard-editor with plugin](https://github.com/burningrain/lizard-engine/blob/main/pics/editor_1.png?raw=true)
 *the lizard editor with the plugin for a game 'planet bot'*
 
+![lizard-editor with plugin](https://github.com/burningrain/lizard-engine/blob/main/pics/editor_2.png?raw=true)
+*the lizard editor with the plugin for the library 'libgdx-simple-animation'*
+
 ### Starting from IDE
 
 * compile the project by using the next command:

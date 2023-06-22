@@ -9,6 +9,7 @@ import com.github.burningrain.lizard.editor.ui.io.ProjectDescriptorImpl;
 import com.github.burningrain.lizard.editor.ui.io.ProjectModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.ProcessViewModelImpl;
 import com.github.burningrain.lizard.editor.ui.model.Store;
+import com.github.burningrain.lizard.editor.ui.utils.ProjectUtils;
 import com.github.burningrain.lizard.editor.ui.utils.UiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -42,14 +43,18 @@ public class NewProcessAction implements NotRevertAction {
     }
 
     private void createProject(String pluginId) {
-        String title = UUID.randomUUID().toString();
+        String title = ProjectUtils.generateProjectTitle();
 
         ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
         processViewModel.setProcessName(title);
 
         ProcessPropertiesInspectorBinder processBinder = store.getProcessPropertyBinders().get(pluginId);
         processViewModel.putDatum(pluginId, processBinder.createNewNodeModel());
-        store.changeCurrentProject(new ProjectModelImpl(createDescriptor(title, pluginId), processViewModel));
+        store.changeCurrentProject(new ProjectModelImpl(
+                ProjectUtils.generateProjectId(),
+                createDescriptor(title, pluginId),
+                processViewModel)
+        );
     }
 
     private ProjectDescriptorImpl createDescriptor(String title, String pluginId) {

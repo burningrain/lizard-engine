@@ -1,6 +1,7 @@
 package com.github.burningrain.lizard.editor.ui.model;
 
 import com.github.burningrain.lizard.editor.api.ProcessPropertiesInspectorBinder;
+import com.github.burningrain.lizard.editor.api.project.ProjectId;
 import com.github.burningrain.lizard.editor.api.project.ProjectModel;
 import com.github.burningrain.lizard.editor.api.project.model.ProcessElementType;
 import com.github.burningrain.lizard.editor.api.project.model.descriptor.PluginDescriptor;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class Store {
 
     private final SimpleObjectProperty<ProjectModel> currentProjectModel = new SimpleObjectProperty<>();
-    private final SimpleMapProperty<String, ProjectModel> projectModels = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final SimpleMapProperty<ProjectId, ProjectModel> projectModels = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     private final SimpleMapProperty<String, ProcessElementsWrapper> processElements = new SimpleMapProperty<>();
     private final SimpleMapProperty<String, IOWrapper> ioPoints = new SimpleMapProperty<>();
@@ -53,24 +54,24 @@ public class Store {
 
     public void changeCurrentProject(ProjectModel currentProcessViewModel) {
         Objects.requireNonNull(currentProcessViewModel);
-        projectModels.put(currentProcessViewModel.getDescriptor().getTitle(), currentProcessViewModel);
+        projectModels.put(currentProcessViewModel.getId(), currentProcessViewModel);
         setCurrentProjectModel(currentProcessViewModel);
     }
 
-    public void changeCurrentProject(String id) {
+    public void changeCurrentProject(ProjectId id) {
         Objects.requireNonNull(id);
         changeCurrentProject(Objects.requireNonNull(projectModels.get(id), "project model must not be null"));
     }
 
-    public ObservableMap<String, ProjectModel> getProjectModels() {
+    public ObservableMap<ProjectId, ProjectModel> getProjectModels() {
         return projectModels.get();
     }
 
-    public SimpleMapProperty<String, ProjectModel> projectModelsProperty() {
+    public SimpleMapProperty<ProjectId, ProjectModel> projectModelsProperty() {
         return projectModels;
     }
 
-    public void setProjectModels(ObservableMap<String, ProjectModel> projectModels) {
+    public void setProjectModels(ObservableMap<ProjectId, ProjectModel> projectModels) {
         this.projectModels.set(projectModels);
     }
 
