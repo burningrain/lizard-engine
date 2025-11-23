@@ -51,7 +51,7 @@ public class EdgeElementDataConverterImpl implements ElementDataConverter<Simple
 
     @Override
     public SimpleAnimationEdgeModel importNodeData(Map<String, String> data) {
-        TransitionDto transitionDto = ImportExportExtPointImpl.createTransitionDto(data);
+        TransitionDto transitionDto = ImportExportExtPointImpl.createTransitionDtoFromAttributes(data);
         SimpleAnimationEdgeModel result = new SimpleAnimationEdgeModel();
         result.setFrom(transitionDto.getFrom());
         result.setTo(transitionDto.getTo());

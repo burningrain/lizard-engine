@@ -79,6 +79,12 @@ public class Store {
         return ioPoints.get();
     }
 
+
+    public Collection<String> getPluginsByExt(String fileExtension) {
+        IOWrapper ioWrapper = getIoPoints().get(fileExtension);
+        return ioWrapper.getPlugins();
+    }
+
     public Collection<String> getPluginsExtensionsTitles() {
         return ioPoints.keySet();
     }

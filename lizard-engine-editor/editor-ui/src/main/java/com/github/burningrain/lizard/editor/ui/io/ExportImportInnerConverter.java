@@ -14,6 +14,7 @@ import com.github.burningrain.lizard.engine.api.data.ProcessData;
 import com.github.burningrain.lizard.engine.api.data.TransitionData;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class ExportImportInnerConverter {
         this.store = store;
     }
 
-    public ProcessViewModelImpl from(ProcessData processData) {
+    public ProcessViewModelImpl from(String fileExtension, ProcessData processData) {
         ProcessViewModelImpl processViewModel = new ProcessViewModelImpl();
         processViewModel.setStartVertexId(processData.getStartElementId());
         processViewModel.setProcessName(processData.getTitle());
@@ -38,7 +39,13 @@ public class ExportImportInnerConverter {
         //FIXME импорт/экспорт заточен только на работу с одним конкретным плагином...
         //FIXME сейчас список параметров без знания о плагинах передается в каждый биндер каждого плагина. Возможно пересечение названий.
         Map<String, ProcessPropertiesInspectorBinder> processPropertyBinders = store.getProcessPropertyBinders();
+
+        Collection<String> plugins = store.getPluginsByExt(fileExtension);
         for (Map.Entry<String, ProcessPropertiesInspectorBinder> entry : processPropertyBinders.entrySet()) {
+            String key = entry.getKey();
+            if (!plugins.contains(key)) {
+                continue;
+            }
             ProcessPropertiesInspectorBinder binder = entry.getValue();
             Serializable model = binder.getElementDataConverter().importNodeData(processData.getAttributes());
             processViewModel.putDatum(entry.getKey(), model);

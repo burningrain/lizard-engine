@@ -64,6 +64,11 @@ public class ImportProcessAction implements NotRevertAction {
         uiUtils.showOpenDialogChooserFile("Import", exts.toString(), exts, this::handle);
     }
 
+    // FIXME весь импорт-экспорт надо переписать по-уму!!! это просто невозможно же!
+    // FIXME сохранять кэширующие обертки для ExtensionPoint плагинов. Дальше в сторе сохранять с какими файлами сейчас идет работа
+    // FIXME дескрипторы плагинов можно создать уже на старте исходя из того, какие плагины есть "здесь и сейчас"
+    // FIXME если подходящего по расширению не обнаружилось - брать дефолтовый, который отображает тупо табличкой свойства в инспекторе
+    // FIXME возможность переключиться на дефолтовый инспектор свойств должна быть всегда!
     private void handle(File file) {
         String ext = FileUtils.getExtensions(file.getName());
         ImportExportExtPoint importExportExtPoint = uiUtils.chooseImportExportExtPoint(ext);
@@ -74,11 +79,14 @@ public class ImportProcessAction implements NotRevertAction {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        ProcessViewModelImpl processViewModel = exportImportConverter.from(importExportExtPoint.read(pluginApi, file.getName(), bytes));
+        ProcessViewModelImpl processViewModel = exportImportConverter.from(
+                ext,
+                importExportExtPoint.read(pluginApi, file.getName(), bytes)
+        );
 
         store.changeCurrentProject(new ProjectModelImpl(
                 ProjectUtils.generateProjectId(),
-                projectConverter.createNewDescriptor(processViewModel),
+                projectConverter.createNewDescriptor(processViewModel, store.getPluginsByExt(ext)),
                 processViewModel)
         );
     }

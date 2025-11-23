@@ -12,14 +12,14 @@ import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.process.
 import com.github.burningrain.gdx.simple.animation.lizard.editor.plugin.process.VariablesDto;
 import com.github.burningrain.lizard.editor.api.LizardPluginApi;
 import com.github.burningrain.lizard.editor.api.ext.ImportExportExtPoint;
-import com.github.burningrain.lizard.engine.api.data.NodeData;
-import com.github.burningrain.lizard.engine.api.data.ProcessData;
-import com.github.burningrain.lizard.engine.api.data.TransitionData;
+import com.github.burningrain.lizard.engine.api.data.*;
 import org.pf4j.Extension;
 import com.github.br.gdx.simple.animation.io.JsonConverter;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Extension
 public class ImportExportExtPointImpl implements ImportExportExtPoint {
@@ -79,14 +79,14 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
         );
     }
 
-    public static  Map<String, String> createTransitionAttributes(TransitionDto transition) {
+    public static Map<String, String> createTransitionAttributes(TransitionDto transition) {
         HashMap<String, String> result = new HashMap<>();
         result.put(Constants.TRANSITION_ATTRIBUTES, JSON.toJson(transition));
 
         return result;
     }
 
-    public static TransitionDto createTransitionDto(Map<String, String> attributes) {
+    public static TransitionDto createTransitionDtoFromAttributes(Map<String, String> attributes) {
         String json = attributes.get(Constants.TRANSITION_ATTRIBUTES);
         return JSON.fromJson(TransitionDto.class, json);
     }
@@ -107,19 +107,19 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
             result.add(toNodeData(id, titleOfType, animatorMap.get(state)));
             id += 10;
         }
-        result.add( createAnyStateNode(id + 10));
+        result.add(createAnyStateNode(id + 10));
 
         return result;
     }
 
     private String getVertexType(String startState, String endState, String state) {
-        if(Constants.ANY_STATE.equals(state)) {
+        if (Constants.ANY_STATE.equals(state)) {
             return Constants.ANY_STATE;
         }
-        if(startState.equals(state)) {
+        if (startState.equals(state)) {
             return Constants.START_STATE;
         }
-        if(endState.equals(state)) {
+        if (endState.equals(state)) {
             return Constants.END_STATE;
         }
 
@@ -195,7 +195,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
 
     private ObjectMap<String, FsmDto> createSubFsm(ProcessData processData) {
         String json = processData.getAttributes().get(Constants.SUBFSMS);
-        if(json == null) {
+        if (json == null) {
             return null;
         }
         return JSON.fromJson(SubFsmsDto.class, json).getSubFsm();
@@ -205,22 +205,46 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
         Map<String, String> attributes = processData.getAttributes();
 
         FsmDto result = new FsmDto();
+
+        // FIXME это провал архитектуры. Просто при создании узла  не передается в SimpleAnimationVertexModel
+        //  информации о том, какой вертекс был создан перетаскиванием с панели. И это надо везде править! ошибка API.
+        if (attributes.get(Constants.START_STATE) == null || attributes.get(Constants.END_STATE) == null) {
+            Map<String, NodeData> map = processData.getElements().stream()
+                    .filter(e -> !Constants.INTERMEDIATE_STATE.equals(e.getTitle()))
+                    .collect(Collectors.toMap(LizardData::getTitle, Function.identity()));
+            attributes.put(Constants.START_STATE, map.get(Constants.START_STATE).getAttributes().get(Constants.NAME));
+            attributes.put(Constants.END_STATE, map.get(Constants.END_STATE).getAttributes().get(Constants.NAME));
+        }
+
         result.setStartState(attributes.get(Constants.START_STATE));
         result.setEndState(attributes.get(Constants.END_STATE));
+
         result.setVariables(createVariables(attributes.get(Constants.VARIABLES)));
         result.setStates(createStates(processData.getElements()));
-        result.setTransitions(createFsmTransitions(processData.getTransitions()));
+        result.setTransitions(createFsmTransitions(processData));
 
         return result;
     }
 
-    private TransitionDto[] createFsmTransitions(List<TransitionData> transitions) {
+    private TransitionDto[] createFsmTransitions(ProcessData processData) {
+        List<TransitionData> transitions = processData.getTransitions();
+        Map<Integer, NodeData> elementsMap = processData.getElements().stream().collect(
+                Collectors.toMap(ProcessElementData::getId, Function.identity()));
+
         TransitionDto[] result = new TransitionDto[transitions.size()];
         int i = 0;
         for (TransitionData transition : transitions) {
-            result[i] = createTransitionDto(transition.getAttributes());
+            result[i] = createTransitionDtoForExportAfsm(elementsMap, transition);
             i++;
         }
+        return result;
+    }
+
+    private TransitionDto createTransitionDtoForExportAfsm(Map<Integer, NodeData> elementsMap, TransitionData transition) {
+        TransitionDto result = createTransitionDtoFromAttributes(transition.getAttributes());
+        result.setFrom(elementsMap.get(transition.getSourceId()).getAttributes().get(Constants.NAME));
+        result.setTo(elementsMap.get(transition.getTargetId()).getAttributes().get(Constants.NAME));
+        //result.setFsmPredicates(); todo кривота, заполнено уже в аттрибутах
         return result;
     }
 
@@ -228,7 +252,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
         ArrayList<String> result = new ArrayList<>(elements.size());
         for (NodeData element : elements) {
             String name = element.getAttributes().get(Constants.NAME);
-            if(Constants.ANY_STATE.equals(name)) {
+            if (Constants.ANY_STATE.equals(name)) {
                 continue;
             }
             result.add(name);
@@ -244,7 +268,7 @@ public class ImportExportExtPointImpl implements ImportExportExtPoint {
     private AnimatorDto[] createAnimators(List<NodeData> elements) {
         ArrayList<AnimatorDto> result = new ArrayList<>(elements.size());
         for (NodeData element : elements) {
-            if(Constants.ANY_STATE.equals(element.getTitle())) {
+            if (Constants.ANY_STATE.equals(element.getTitle())) {
                 continue;
             }
             result.add(createAnimator(element));

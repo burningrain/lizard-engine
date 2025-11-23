@@ -90,8 +90,23 @@ public class ProjectConverter {
         }
     }
 
-    public ProjectDescriptorImpl createNewDescriptor(ProcessViewModel processViewModel) {
-        return createNewDescriptor(processViewModel.getProcessName(), processViewModel.getDescription(), null);
+    public ProjectDescriptorImpl createNewDescriptor(ProcessViewModel processViewModel, Collection<String> plugins) {
+        return createNewDescriptor(
+                processViewModel.getProcessName(),
+                processViewModel.getDescription(),
+                createDefaultPluginDescriptors(plugins)
+        );
+    }
+
+    private Collection<PluginDescriptor> createDefaultPluginDescriptors(Collection<String> plugins) {
+        ArrayList<PluginDescriptor> pluginDescriptors = new ArrayList<>();
+        for (String plugin : plugins) {
+            PluginDescriptor descriptor = new PluginDescriptor();
+            descriptor.setPluginId(plugin);
+            pluginDescriptors.add(descriptor);
+        }
+
+        return pluginDescriptors;
     }
 
     private ProjectDescriptorImpl createNewDescriptor(ProjectModel projectModel) {
