@@ -42,9 +42,10 @@ public class PreviewGdxApplicationListener implements ApplicationListener {
             looping = model.loopingProperty().get();
 
             Object[] regions = textureAtlas.getRegions().shrink();
-            int length = model.getTo() - model.getFrom();
+            int length = Math.abs(model.getTo() - model.getFrom());
             TextureRegion[] keyFramesArray = new TextureRegion[length];
-            System.arraycopy(regions, model.getFrom(), keyFramesArray, 0, length);
+            int srcPos = model.getTo() > model.getFrom()? model.getFrom() : model.getTo();
+            System.arraycopy(regions, srcPos, keyFramesArray, 0, length);
 
             animation = new Animation<TextureRegion>(1f / model.getFrameFrequency(), keyFramesArray);
             animation.setPlayMode(model.getMode());
